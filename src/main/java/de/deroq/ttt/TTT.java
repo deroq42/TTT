@@ -2,7 +2,7 @@ package de.deroq.ttt;
 
 import de.deroq.ttt.commands.SetLobbyCommand;
 import de.deroq.ttt.commands.StartCommand;
-import de.deroq.ttt.countdowns.LobbyIdleTimer;
+import de.deroq.ttt.timers.LobbyIdleTimer;
 import de.deroq.ttt.listeners.PlayerInteractListener;
 import de.deroq.ttt.listeners.PlayerJoinListener;
 import de.deroq.ttt.managers.FileManager;

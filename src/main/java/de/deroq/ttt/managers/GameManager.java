@@ -1,8 +1,8 @@
 package de.deroq.ttt.managers;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.countdowns.LobbyTimer;
-import de.deroq.ttt.countdowns.TimerTask;
+import de.deroq.ttt.timers.LobbyTimer;
+import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.models.GamePlayer;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;

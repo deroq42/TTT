@@ -1,4 +1,4 @@
-package de.deroq.ttt.countdowns;
+package de.deroq.ttt.timers;
 
 import de.deroq.ttt.TTT;
 import org.bukkit.scheduler.BukkitRunnable;

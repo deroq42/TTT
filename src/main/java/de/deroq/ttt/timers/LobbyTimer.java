@@ -1,4 +1,4 @@
-package de.deroq.ttt.countdowns;
+package de.deroq.ttt.timers;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.Constants;
@@ -9,10 +9,13 @@ import java.util.Arrays;
 
 public class LobbyTimer extends TimerTask {
 
+    //WHERE THE TIMER BEGINS
+    private final int TOTAL_SECONDS = 61;
+
     public LobbyTimer(TTT ttt) {
         super(ttt, true, 0, 20);
-        setTotalSeconds(61);
-        setCurrentSeconds(61);
+        setTotalSeconds(TOTAL_SECONDS);
+        setCurrentSeconds(TOTAL_SECONDS);
     }
 
     @Override
@@ -24,7 +27,7 @@ public class LobbyTimer extends TimerTask {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.setLevel(currentSeconds);
-            player.setExp((float) currentSeconds / 61);
+            player.setExp((float) currentSeconds / TOTAL_SECONDS);
         });
 
 

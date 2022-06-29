@@ -1,4 +1,4 @@
-package de.deroq.ttt.countdowns;
+package de.deroq.ttt.timers;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.Constants;
@@ -6,10 +6,13 @@ import org.bukkit.Bukkit;
 
 public class LobbyIdleTimer extends TimerTask {
 
+    //WHERE THE TIMER STOPS TO COUNT UP
+    private final int TOTAL_SECONDS = 600;
+
     public LobbyIdleTimer(TTT ttt) {
         super(ttt, false, 20*60*3, 20*60*3);
         setCurrentSeconds(0);
-        setTotalSeconds(600);
+        setTotalSeconds(TOTAL_SECONDS);
     }
 
     @Override
