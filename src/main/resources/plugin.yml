@@ -2,3 +2,4 @@ name: TTT
 version: 1.0
 author: deroq
 main: de.deroq.ttt.TTT
+api-version: 1.16

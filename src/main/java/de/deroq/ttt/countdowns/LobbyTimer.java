@@ -7,11 +7,10 @@ import org.bukkit.Sound;
 
 import java.util.Arrays;
 
-public class LobbyCountdown extends Countdown{
+public class LobbyTimer extends TimerTask {
 
-
-    public LobbyCountdown(TTT ttt) {
-        super(ttt);
+    public LobbyTimer(TTT ttt) {
+        super(ttt, true, 0, 20);
         setTotalSeconds(61);
         setCurrentSeconds(61);
     }

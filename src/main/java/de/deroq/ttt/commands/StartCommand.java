@@ -1,7 +1,8 @@
 package de.deroq.ttt.commands;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.countdowns.LobbyCountdown;
+import de.deroq.ttt.countdowns.LobbyTimer;
+import de.deroq.ttt.countdowns.TimerTask;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.command.Command;
@@ -34,18 +35,17 @@ public class StartCommand extends Command {
             return true;
         }
 
-        if(ttt.getGameManager().getCurrentCountdown() != null && ttt.getGameManager().getCurrentCountdown() instanceof LobbyCountdown) {
-            if(ttt.getGameManager().getCurrentCountdown().getCurrentSeconds() <= 10) {
+        TimerTask currentTimer = ttt.getGameManager().getCurrentTimer();
+        if(currentTimer instanceof LobbyTimer) {
+            if(currentTimer.getCurrentSeconds() <= 10) {
                 player.sendMessage(Constants.PREFIX + "§cDie Runde startet bereits");
                 return true;
             }
         } else {
-            LobbyCountdown lobbyCountdown = new LobbyCountdown(ttt);
-            lobbyCountdown.onStart();
-            ttt.getGameManager().setCurrentCountdown(lobbyCountdown);
+            currentTimer = ttt.getGameManager().createLobbyTimer();
         }
 
-        ttt.getGameManager().getCurrentCountdown().setCurrentSeconds(11);
+        currentTimer.setCurrentSeconds(11);
         ttt.getGameManager().setForceStarted(true);
         player.sendMessage(Constants.PREFIX + "§aDie Runde wird gestartet");
         return false;
