@@ -1,6 +1,7 @@
 package de.deroq.ttt.managers;
 
 import de.deroq.ttt.TTT;
+import de.deroq.ttt.models.GameMap;
 import de.deroq.ttt.timers.LobbyIdleTimer;
 import de.deroq.ttt.timers.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
@@ -21,6 +22,7 @@ public class GameManager {
     private final TTT ttt;
     private GameState gameState;
     private TimerTask currentTimer;
+    private GameMap currentGameMap;
     private boolean forceStarted;
     private final Collection<GamePlayer> players;
 
@@ -97,6 +99,14 @@ public class GameManager {
 
     public void setCurrentTimer(TimerTask currentTimer) {
         this.currentTimer = currentTimer;
+    }
+
+    public GameMap getCurrentGameMap() {
+        return currentGameMap;
+    }
+
+    public void setCurrentGameMap(GameMap currentGameMap) {
+        this.currentGameMap = currentGameMap;
     }
 
     public boolean isForceStarted() {

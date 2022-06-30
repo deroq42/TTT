@@ -1,6 +1,5 @@
 package de.deroq.ttt.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap {
@@ -8,6 +7,7 @@ public class GameMap {
     private String muid;
     private List<String> builders;
     private List<String> spawnLocations;
+    private String testerLocation;
     private String rightTesterLightLocation;
     private String leftTesterLightLocation;
     private String spectatorLocation;
@@ -39,6 +39,14 @@ public class GameMap {
 
     public void setSpawnLocations(List<String> spawnLocations) {
         this.spawnLocations = spawnLocations;
+    }
+
+    public String getTesterLocation() {
+        return testerLocation;
+    }
+
+    public void setTesterLocation(String testerLocation) {
+        this.testerLocation = testerLocation;
     }
 
     public String getRightTesterLightLocation() {

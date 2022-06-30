@@ -1,6 +1,7 @@
 package de.deroq.ttt;
 
-import de.deroq.ttt.commands.CreateMapCommand;
+import de.deroq.ttt.commands.ForceMapCommand;
+import de.deroq.ttt.commands.map.*;
 import de.deroq.ttt.commands.SetLobbyCommand;
 import de.deroq.ttt.commands.StartCommand;
 import de.deroq.ttt.database.TTTDatabase;
@@ -67,8 +68,14 @@ public class TTT extends JavaPlugin {
     private void registerCommands() {
         SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
         commandMap.register("start", new StartCommand("start", this));
+        commandMap.register("forcemap", new ForceMapCommand("forcemap", this));
         commandMap.register("setLobby", new SetLobbyCommand("setLobby", this));
         commandMap.register("createMap", new CreateMapCommand("createMap", this));
+        commandMap.register("addSpawn", new AddSpawnCommand("addSpawn", this));
+        commandMap.register("setSpectator", new SetSpectatorCommand("setSpectator", this));
+        commandMap.register("setTester", new SetTesterCommand("setTester", this));
+        commandMap.register("addTesterLight", new AddTesterLightCommand("addTesterLight", this));
+        commandMap.register("addBuilder", new AddBuilderCommand("addBuilder", this));
     }
 
     public TTTDatabase getTTTDatabase() {

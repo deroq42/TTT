@@ -31,14 +31,14 @@ public class StartCommand extends Command {
         }
 
         if(ttt.getGameManager().getGameState() != GameState.LOBBY) {
-            player.sendMessage(Constants.PREFIX + "§cDie Runde hat bereits begonnen");
+            player.sendMessage(Constants.PREFIX + "Die Runde hat bereits begonnen");
             return true;
         }
 
         TimerTask currentTimer = ttt.getGameManager().getCurrentTimer();
         if(currentTimer instanceof LobbyTimer) {
             if(currentTimer.getCurrentSeconds() <= 10) {
-                player.sendMessage(Constants.PREFIX + "§cDie Runde startet bereits");
+                player.sendMessage(Constants.PREFIX + "Die Runde startet bereits");
                 return true;
             }
         } else {

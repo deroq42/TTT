@@ -1,8 +1,7 @@
-package de.deroq.ttt.commands;
+package de.deroq.ttt.commands.map;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.Constants;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,10 +27,15 @@ public class CreateMapCommand extends Command {
             return true;
         }
 
+        if(args.length != 1) {
+            player.sendMessage(Constants.PREFIX + "§3/createMap <name>");
+            return true;
+        }
+
         String id = args[0];
         ttt.getGameMapManager().createMap(id).thenAcceptAsync(exists -> {
             if (exists) {
-                player.sendMessage(Constants.PREFIX + "§cDiese Map gibt es bereits");
+                player.sendMessage(Constants.PREFIX + "Diese Map gibt es bereits");
                 return;
             }
 
