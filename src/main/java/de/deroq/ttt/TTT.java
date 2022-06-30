@@ -1,11 +1,12 @@
 package de.deroq.ttt;
 
+import de.deroq.database.models.DatabaseServiceBuilder;
+import de.deroq.database.models.DatabaseServiceType;
+import de.deroq.database.services.mongo.MongoDatabaseService;
 import de.deroq.ttt.commands.ForceMapCommand;
 import de.deroq.ttt.commands.map.*;
 import de.deroq.ttt.commands.SetLobbyCommand;
 import de.deroq.ttt.commands.StartCommand;
-import de.deroq.ttt.database.TTTDatabase;
-import de.deroq.ttt.database.misc.TTTDatabaseBuilder;
 import de.deroq.ttt.game.GameMapManager;
 import de.deroq.ttt.listeners.PlayerInteractListener;
 import de.deroq.ttt.listeners.PlayerJoinListener;
@@ -19,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class TTT extends JavaPlugin {
 
-    private TTTDatabase tttDatabase;
+    private MongoDatabaseService databaseService;
     private FileManager fileManager;
     private GameManager gameManager;
     private GameMapManager gameMapManager;
@@ -40,7 +41,7 @@ public class TTT extends JavaPlugin {
     }
 
     private void initDatabase() {
-        this.tttDatabase = new TTTDatabaseBuilder(this)
+        this.databaseService = (MongoDatabaseService) new DatabaseServiceBuilder(DatabaseServiceType.MONGO)
                 .setHost("localhost")
                 .setUsername("root")
                 .setDatabase("ttt")
@@ -48,7 +49,7 @@ public class TTT extends JavaPlugin {
                 .setPort(27017)
                 .build();
 
-        tttDatabase.connect();
+        databaseService.connect();
     }
 
     private void initManagers() {
@@ -79,8 +80,8 @@ public class TTT extends JavaPlugin {
         commandMap.register("addBuilder", new AddBuilderCommand("addBuilder", this));
     }
 
-    public TTTDatabase getTTTDatabase() {
-        return tttDatabase;
+    public MongoDatabaseService getDatabaseService() {
+        return databaseService;
     }
 
     public FileManager getFileManager() {
