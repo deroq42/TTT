@@ -13,12 +13,14 @@ import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 public class GameManager {
@@ -77,7 +79,36 @@ public class GameManager {
         }
     }
 
-    public void triggerTraitorTrap() {
+    public void lootRandomItem(Player player, Block block) {
+        List<Material> items = Arrays.asList(
+                Material.STONE_SWORD,
+                Material.WOODEN_SWORD,
+                Material.BOW);
+
+        Collections.shuffle(items);
+        for(Material material : items) {
+            if(player.getInventory().contains(material)) {
+                continue;
+            }
+
+            player.getInventory().addItem(new ItemStack(material));
+            if(material == Material.BOW) {
+                player.getInventory().addItem(new ItemStack(Material.ARROW, 32));
+            }
+
+            player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 3f, 3f);
+            block.setType(Material.AIR);
+            break;
+        }
+    }
+
+    public void lootIronSword(Player player, Block block) {
+        player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
+        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 3f, 3f);
+        block.setType(Material.AIR);
+    }
+
+    public void triggerTraitorTrap(Player player) {
         Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation()).subtract(0, 1, 0);
         List<BlockFace> blockFaces = Arrays.asList(
                 BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
@@ -91,6 +122,8 @@ public class GameManager {
                     block.setType(Material.AIR);
                     Bukkit.getScheduler().runTaskLater(ttt, () -> block.setType(Material.IRON_BLOCK), 4 * 20);
                 });
+
+        player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 3f, 3f);
     }
 
     public void allocateRoles() {
