@@ -35,7 +35,7 @@ public class GameMapManager {
         return databaseServiceMethods.onUpdate(collection, Filters.eq("muid", gameMap.getMuid()), gameMap);
     }
 
-    public CompletableFuture<GameMap> getAsyncMap(String muid) {
+    public CompletableFuture<GameMap> getMap(String muid) {
         return databaseServiceMethods.getAsync(collection, Filters.eq("muid", muid));
     }
 

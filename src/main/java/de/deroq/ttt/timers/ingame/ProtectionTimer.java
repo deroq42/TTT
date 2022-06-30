@@ -44,7 +44,7 @@ public class ProtectionTimer extends TimerTask {
 
         ttt.getGameManager().setGameState(GameState.INGAME);
         ttt.getGameManager().setCurrentTimer(ingameTimer);
-        //ROLLEN VERGEBEN
+        ttt.getGameManager().allocateRoles();
 
         ttt.getGameManager().getAlive().forEach(gamePlayer -> {
             Player player = gamePlayer.getPlayer();

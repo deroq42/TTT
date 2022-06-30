@@ -8,6 +8,7 @@ import de.deroq.ttt.commands.map.*;
 import de.deroq.ttt.commands.SetLobbyCommand;
 import de.deroq.ttt.commands.StartCommand;
 import de.deroq.ttt.game.GameMapManager;
+import de.deroq.ttt.listeners.FoodLevelChangeListener;
 import de.deroq.ttt.listeners.PlayerInteractListener;
 import de.deroq.ttt.listeners.PlayerJoinListener;
 import de.deroq.ttt.config.FileManager;
@@ -64,6 +65,7 @@ public class TTT extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new PlayerInteractListener(this), this);
+        pluginManager.registerEvents(new FoodLevelChangeListener(), this);
     }
 
     private void registerCommands() {

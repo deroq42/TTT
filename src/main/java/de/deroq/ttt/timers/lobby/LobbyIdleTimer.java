@@ -21,6 +21,7 @@ public class LobbyIdleTimer extends TimerTask {
     public void onTick() {
         if(ttt.getGameManager().getGameState() != GameState.LOBBY) {
             onStop();
+            return;
         }
 
         if(Bukkit.getOnlinePlayers().size() < Constants.NEEDED_PLAYERS) {

@@ -51,6 +51,10 @@ public class GamePlayer {
         player.setCollidable(!spectator);
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public Role getRole() {
         return role;
     }

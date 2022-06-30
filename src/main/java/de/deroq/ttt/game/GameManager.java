@@ -2,6 +2,7 @@ package de.deroq.ttt.game;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.models.GameMap;
+import de.deroq.ttt.models.Role;
 import de.deroq.ttt.timers.lobby.LobbyIdleTimer;
 import de.deroq.ttt.timers.lobby.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
@@ -11,12 +12,13 @@ import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameManager {
@@ -38,15 +40,14 @@ public class GameManager {
     }
 
     public void initLobbyTimer() {
-        if(forceStarted) {
+        if (forceStarted) {
             return;
         }
 
-        if(Bukkit.getOnlinePlayers().size() == Constants.NEEDED_PLAYERS) {
+        if (Bukkit.getOnlinePlayers().size() == Constants.NEEDED_PLAYERS) {
             setCurrentTimer(createLobbyTimer());
         }
     }
-
 
     public TimerTask createLobbyTimer() {
         LobbyTimer lobbyTimer = new LobbyTimer(ttt);
@@ -59,16 +60,9 @@ public class GameManager {
         lobbyIdleTimer.onStart();
     }
 
-    public Inventory getRolePassInventory() {
-        Inventory inventory = Bukkit.createInventory(null, 9, "§8Rollenpass einlösen");
-        inventory.setItem(2, Constants.DETECTIVE_PASS_ITEM);
-        inventory.setItem(6, Constants.TRAITOR_PASS_ITEM);
-        return inventory;
-    }
-
     public void teleportToLobby(Player player) {
         Location lobbyLocation = ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME);
-        if(lobbyLocation != null) {
+        if (lobbyLocation != null) {
             player.teleport(ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME));
         }
     }
@@ -77,23 +71,115 @@ public class GameManager {
         int spawnLocation = 0;
         List<String> spawnLocations = currentGameMap.getSpawnLocations();
 
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.teleport(BukkitUtils.locationFromString(spawnLocations.get(spawnLocation)));
             spawnLocation++;
         }
     }
 
-    public Collection<GamePlayer> getAlive() {
+    public void triggerTraitorTrap() {
+        Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation()).subtract(0, 1, 0);
+        List<BlockFace> blockFaces = Arrays.asList(
+                BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
+                BlockFace.WEST, BlockFace.SELF, BlockFace.EAST,
+                BlockFace.SOUTH_WEST, BlockFace.SOUTH, BlockFace.SOUTH_EAST);
+
+        blockFaces
+                .stream()
+                .map(blockFace -> location.getBlock().getRelative(blockFace))
+                .forEach(block -> {
+                    block.setType(Material.AIR);
+                    Bukkit.getScheduler().runTaskLater(ttt, () -> block.setType(Material.IRON_BLOCK), 4 * 20);
+                });
+    }
+
+    public void allocateRoles() {
+        allocateTraitors();
+        allocateDetectives();
+        allocateInnocents();
+    }
+
+    private void allocateTraitors() {
+        double traitorsValue = Bukkit.getOnlinePlayers().size() * Constants.TRAITOR_ALLOCATE_RATE;
+        int traitors = (int) Math.round(traitorsValue);
+
+        Random random = new Random();
+        List<GamePlayer> players = getNoRoles();
+
+        for (int i = 0; i < traitors; i++) {
+            GamePlayer gamePlayer = players.get(random.nextInt(players.size()));
+            gamePlayer.setRole(Role.TRAITOR);
+            players.remove(gamePlayer);
+        }
+    }
+
+    private void allocateDetectives() {
+        double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
+        int detectives = (int) Math.round(detectivesValue);
+
+        Random random = new Random();
+        List<GamePlayer> players = getNoRoles();
+
+        for (int i = 0; i < detectives; i++) {
+            GamePlayer gamePlayer = players.get(random.nextInt(players.size()));
+            gamePlayer.setRole(Role.DETECTIVE);
+            players.remove(gamePlayer);
+        }
+    }
+
+    private void allocateInnocents() {
+        List<GamePlayer> players = getNoRoles();
+        for (GamePlayer gamePlayer : players) {
+            gamePlayer.setRole(Role.INNOCENT);
+        }
+    }
+
+    public Optional<GamePlayer> getGamePlayer(UUID uuid) {
+        return players
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getUuid().equals(uuid))
+                .findFirst();
+    }
+
+    public List<GamePlayer> getAlive() {
         return players
                 .stream()
                 .filter(gamePlayer -> !gamePlayer.isSpectator())
                 .collect(Collectors.toList());
     }
 
-    public Collection<GamePlayer> getSpectators() {
+    public List<GamePlayer> getSpectators() {
         return players
                 .stream()
                 .filter(GamePlayer::isSpectator)
+                .collect(Collectors.toList());
+    }
+
+    public List<GamePlayer> getTraitors() {
+        return getAlive()
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getRole() == Role.TRAITOR)
+                .collect(Collectors.toList());
+    }
+
+    public List<GamePlayer> getDetectives() {
+        return getAlive()
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getRole() == Role.DETECTIVE)
+                .collect(Collectors.toList());
+    }
+
+    public List<GamePlayer> getInnocents() {
+        return getAlive()
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getRole() == Role.INNOCENT)
+                .collect(Collectors.toList());
+    }
+
+    public List<GamePlayer> getNoRoles() {
+        return getAlive()
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getRole() == null)
                 .collect(Collectors.toList());
     }
 

@@ -35,7 +35,7 @@ public class AddTesterLightCommand extends Command {
         }
 
         String map = args[0];
-        ttt.getGameMapManager().getAsyncMap(map).thenAcceptAsync(gameMap -> {
+        ttt.getGameMapManager().getMap(map).thenAcceptAsync(gameMap -> {
             if (gameMap == null) {
                 player.sendMessage(Constants.PREFIX + "Diese Map gibt es nicht");
                 return;

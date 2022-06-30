@@ -8,12 +8,7 @@ public class PlayerUtils {
     public static void loadInventory(Player player, GameState gameState) {
         player.getInventory().setItem(8, Constants.LOBBY_ITEM);
 
-        if (gameState == GameState.LOBBY) {
-            player.getInventory().setItem(4, Constants.ROLE_PASS_ITEM);
-            return;
-        }
-
-        if (gameState == GameState.RESTART) {
+        if (gameState != GameState.LOBBY) {
             player.getInventory().setItem(0, Constants.SPECTATOR_ITEM);
         }
     }
@@ -23,7 +18,6 @@ public class PlayerUtils {
         player.setFoodLevel(20);
         player.setLevel(0);
         player.setExp(0);
-        player.setOp(false);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.setGameMode(GameMode.SURVIVAL);
