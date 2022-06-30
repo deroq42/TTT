@@ -1,4 +1,4 @@
-package de.deroq.ttt.models.configs;
+package de.deroq.ttt.config;
 
 import de.deroq.ttt.utils.BukkitUtils;
 import org.bukkit.Location;

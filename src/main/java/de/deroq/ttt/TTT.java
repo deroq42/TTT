@@ -1,8 +1,11 @@
 package de.deroq.ttt;
 
+import de.deroq.ttt.commands.CreateMapCommand;
 import de.deroq.ttt.commands.SetLobbyCommand;
 import de.deroq.ttt.commands.StartCommand;
-import de.deroq.ttt.timers.LobbyIdleTimer;
+import de.deroq.ttt.database.TTTDatabase;
+import de.deroq.ttt.database.misc.TTTDatabaseBuilder;
+import de.deroq.ttt.managers.GameMapManager;
 import de.deroq.ttt.listeners.PlayerInteractListener;
 import de.deroq.ttt.listeners.PlayerJoinListener;
 import de.deroq.ttt.managers.FileManager;
@@ -15,15 +18,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class TTT extends JavaPlugin {
 
+    private TTTDatabase tttDatabase;
     private FileManager fileManager;
     private GameManager gameManager;
+    private GameMapManager gameMapManager;
 
     @Override
     public void onEnable() {
+        initDatabase();
         initManagers();
         registerCommands();
         registerListeners();
-        initLobbyIdleTimer();
 
         getLogger().info("TTT has been enabled.");
     }
@@ -33,11 +38,24 @@ public class TTT extends JavaPlugin {
         getLogger().info("TTT has been disabled.");
     }
 
+    private void initDatabase() {
+        this.tttDatabase = new TTTDatabaseBuilder(this)
+                .setHost("localhost")
+                .setUsername("root")
+                .setDatabase("ttt")
+                .setPassword("123456")
+                .setPort(27017)
+                .build();
+
+        tttDatabase.connect();
+    }
+
     private void initManagers() {
         this.fileManager = new FileManager();
         fileManager.loadFiles();
 
         this.gameManager = new GameManager(this);
+        this.gameMapManager = new GameMapManager(this);
     }
 
     private void registerListeners() {
@@ -50,11 +68,11 @@ public class TTT extends JavaPlugin {
         SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
         commandMap.register("start", new StartCommand("start", this));
         commandMap.register("setLobby", new SetLobbyCommand("setLobby", this));
+        commandMap.register("createMap", new CreateMapCommand("createMap", this));
     }
 
-    private void initLobbyIdleTimer() {
-        LobbyIdleTimer lobbyIdleTimer = new LobbyIdleTimer(this);
-        lobbyIdleTimer.onStart();
+    public TTTDatabase getTTTDatabase() {
+        return tttDatabase;
     }
 
     public FileManager getFileManager() {
@@ -63,5 +81,9 @@ public class TTT extends JavaPlugin {
 
     public GameManager getGameManager() {
         return gameManager;
+    }
+
+    public GameMapManager getGameMapManager() {
+        return gameMapManager;
     }
 }

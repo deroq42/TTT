@@ -19,7 +19,7 @@ public class SetLobbyCommand extends Command {
     }
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] strings) {
+    public boolean execute(CommandSender commandSender, String s, String[] args) {
         if(!(commandSender instanceof Player)) {
             return true;
         }

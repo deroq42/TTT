@@ -1,6 +1,7 @@
 package de.deroq.ttt.managers;
 
 import de.deroq.ttt.TTT;
+import de.deroq.ttt.timers.LobbyIdleTimer;
 import de.deroq.ttt.timers.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.models.GamePlayer;
@@ -28,9 +29,11 @@ public class GameManager {
         this.gameState = GameState.LOBBY;
         this.forceStarted = false;
         this.players = new ArrayList<>();
+
+        initLobbyIdleTimer();
     }
 
-    public void startLobbyTimer() {
+    public void initLobbyTimer() {
         if(forceStarted) {
             return;
         }
@@ -40,10 +43,16 @@ public class GameManager {
         }
     }
 
+
     public TimerTask createLobbyTimer() {
         LobbyTimer lobbyTimer = new LobbyTimer(ttt);
         lobbyTimer.onStart();
         return lobbyTimer;
+    }
+
+    private void initLobbyIdleTimer() {
+        LobbyIdleTimer lobbyIdleTimer = new LobbyIdleTimer(ttt);
+        lobbyIdleTimer.onStart();
     }
 
     public Inventory getRolePassInventory() {

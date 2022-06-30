@@ -1,4 +1,4 @@
-package de.deroq.ttt.models.configs;
+package de.deroq.ttt.config;
 
 public abstract class Config {
 

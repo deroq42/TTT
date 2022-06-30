@@ -4,11 +4,15 @@ import de.deroq.ttt.models.misc.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Constants {
 
+    public static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
     public static final String PREFIX = "§7[§3TTT§7] ";
-    public static final String LOBBY_LOCATION_NAME = "lobby";
 
+    public static final String LOBBY_LOCATION_NAME = "lobby";
     public static final int NEEDED_PLAYERS = 2;
 
     public static final ItemStack ROLE_PASS_ITEM = new ItemBuilder(Material.TORCH).setDisplayName("§cPässe").build();

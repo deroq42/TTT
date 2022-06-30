@@ -1,8 +1,8 @@
 package de.deroq.ttt.managers;
 
 import com.google.gson.Gson;
-import de.deroq.ttt.models.configs.Config;
-import de.deroq.ttt.models.configs.LocationsConfig;
+import de.deroq.ttt.config.Config;
+import de.deroq.ttt.config.LocationsConfig;
 
 import java.io.*;
 import java.util.Arrays;
