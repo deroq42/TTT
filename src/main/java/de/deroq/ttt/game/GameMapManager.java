@@ -1,10 +1,10 @@
-package de.deroq.ttt.managers;
+package de.deroq.ttt.game;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.database.misc.TTTDatabaseMethods;
-import de.deroq.ttt.models.GameMap;
+import de.deroq.ttt.game.models.GameMap;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

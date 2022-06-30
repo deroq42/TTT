@@ -1,7 +1,11 @@
-package de.deroq.ttt.timers;
+package de.deroq.ttt.timers.lobby;
 
 import de.deroq.ttt.TTT;
+import de.deroq.ttt.game.models.GameMap;
+import de.deroq.ttt.timers.ingame.ProtectionTimer;
+import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.Constants;
+import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -36,14 +40,22 @@ public class LobbyTimer extends TimerTask {
                 player.sendMessage(Constants.PREFIX + "Die Runde startet in §3" + currentSeconds + " " + (currentSeconds != 1 ? "Sekunden" : "Sekunde"));
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 3f);
             });
+
+            if(currentSeconds == 10) {
+                GameMap gameMap = ttt.getGameManager().getCurrentGameMap();
+                Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(Constants.PREFIX + "Es wird auf der Map §3" + gameMap.getMuid() + " §7gespielt, gebaut von: §3" + gameMap.getBuilders()));
+            }
         }
     }
 
     @Override
     public void onFinish() {
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            player.sendMessage(Constants.PREFIX + "Die Runde hat begonnen!");
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 3f, 3f);
-        });
+        ProtectionTimer protectionTimer = new ProtectionTimer(ttt);
+        protectionTimer.onStart();
+        onStop();
+
+        ttt.getGameManager().setGameState(GameState.PROTECTION);
+        ttt.getGameManager().teleportToSpawns();
+        ttt.getGameManager().setCurrentTimer(protectionTimer);
     }
 }

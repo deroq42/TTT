@@ -1,4 +1,4 @@
-package de.deroq.ttt.models.misc;
+package de.deroq.ttt.models;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

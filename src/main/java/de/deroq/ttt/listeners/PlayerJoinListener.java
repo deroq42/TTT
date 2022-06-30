@@ -1,7 +1,7 @@
 package de.deroq.ttt.listeners;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.models.GamePlayer;
+import de.deroq.ttt.game.models.GamePlayer;
 import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;

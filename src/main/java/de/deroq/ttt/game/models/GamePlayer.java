@@ -1,6 +1,6 @@
-package de.deroq.ttt.models;
+package de.deroq.ttt.game.models;
 
-import de.deroq.ttt.models.misc.Role;
+import de.deroq.ttt.models.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package de.deroq.ttt.commands;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.timers.LobbyTimer;
+import de.deroq.ttt.timers.lobby.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;

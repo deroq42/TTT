@@ -40,7 +40,7 @@ public class ForceMapCommand extends Command {
 
         String map = args[0];
         if(!ttt.getGameMapManager().getMapCache().containsKey(map)) {
-            player.sendMessage(Constants.PREFIX + "§3Verfügbare Maps: " + ttt.getGameMapManager().getMapCache().values());
+            player.sendMessage(Constants.PREFIX + "§3Verfügbare Maps: " + ttt.getGameMapManager().getMapCache().keySet());
             return true;
         }
 

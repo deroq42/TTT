@@ -1,11 +1,12 @@
-package de.deroq.ttt.managers;
+package de.deroq.ttt.game;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.models.GameMap;
-import de.deroq.ttt.timers.LobbyIdleTimer;
-import de.deroq.ttt.timers.LobbyTimer;
+import de.deroq.ttt.game.models.GameMap;
+import de.deroq.ttt.timers.lobby.LobbyIdleTimer;
+import de.deroq.ttt.timers.lobby.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
-import de.deroq.ttt.models.GamePlayer;
+import de.deroq.ttt.game.models.GamePlayer;
+import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameManager {
@@ -68,6 +70,16 @@ public class GameManager {
         Location lobbyLocation = ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME);
         if(lobbyLocation != null) {
             player.teleport(ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME));
+        }
+    }
+
+    public void teleportToSpawns() {
+        int spawnLocation = 0;
+        List<String> spawnLocations = currentGameMap.getSpawnLocations();
+
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            player.teleport(BukkitUtils.locationFromString(spawnLocations.get(spawnLocation)));
+            spawnLocation++;
         }
     }
 
