@@ -7,9 +7,11 @@ import de.deroq.ttt.timers.lobby.LobbyIdleTimer;
 import de.deroq.ttt.timers.lobby.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.game.models.GamePlayer;
+import de.deroq.ttt.timers.restart.RestartTimer;
 import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
+import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 public class GameManager {
@@ -29,14 +30,18 @@ public class GameManager {
     private GameState gameState;
     private TimerTask currentTimer;
     private GameMap currentGameMap;
+    private Collection<GamePlayer> players;
     private boolean forceStarted;
-    private final Collection<GamePlayer> players;
+    private boolean enteredTraitorTester;
+    private boolean triggeredTraitorTrap;
 
     public GameManager(TTT ttt) {
         this.ttt = ttt;
         this.gameState = GameState.LOBBY;
-        this.forceStarted = false;
         this.players = new ArrayList<>();
+        this.forceStarted = false;
+        this.enteredTraitorTester = false;
+        this.triggeredTraitorTrap = false;
 
         initLobbyIdleTimer();
     }
@@ -79,20 +84,31 @@ public class GameManager {
         }
     }
 
-    public void lootRandomItem(Player player, Block block) {
+    public void setSpectator(Player player) {
+        PlayerUtils.loadPlayer(player);
+        getGamePlayer(player.getUniqueId()).get().setSpectator(true, getAlive());
+        player.teleport(BukkitUtils.locationFromString(currentGameMap.getSpectatorLocation()));
+    }
+
+    public void lootRandomWeapon(Player player, Block block) {
+        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        if (gamePlayer.isSpectator()) {
+            return;
+        }
+
         List<Material> items = Arrays.asList(
                 Material.STONE_SWORD,
                 Material.WOODEN_SWORD,
                 Material.BOW);
 
         Collections.shuffle(items);
-        for(Material material : items) {
-            if(player.getInventory().contains(material)) {
+        for (Material material : items) {
+            if (player.getInventory().contains(material)) {
                 continue;
             }
 
             player.getInventory().addItem(new ItemStack(material));
-            if(material == Material.BOW) {
+            if (material == Material.BOW) {
                 player.getInventory().addItem(new ItemStack(Material.ARROW, 32));
             }
 
@@ -103,17 +119,84 @@ public class GameManager {
     }
 
     public void lootIronSword(Player player, Block block) {
+        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        if (gamePlayer.isSpectator()) {
+            return;
+        }
+
         player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 3f, 3f);
         block.setType(Material.AIR);
     }
 
+    public void enterTraitorTester(Player player) {
+        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        if (gamePlayer.isSpectator()) {
+            return;
+        }
+
+        if (enteredTraitorTester) {
+            player.sendMessage(Constants.PREFIX + "Es ist bereits jemand im Traitor-Tester");
+            return;
+        }
+
+        Role role = gamePlayer.getRole();
+        if (role == Role.DETECTIVE) {
+            player.sendMessage(Constants.PREFIX + "Du darfst den Traitor-Tester nicht betreten");
+            return;
+        }
+
+        Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation());
+        player.teleport(location);
+        BukkitUtils.playSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
+        player.getNearbyEntities(2, 0, 2).forEach(entity -> entity.teleport(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(-2))));
+        BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat den Traitor-Tester betreten");
+        evaluateTraitorTesterResult(location, role);
+        enteredTraitorTester = true;
+    }
+
+    private void evaluateTraitorTesterResult(Location location, Role role) {
+        Location rightLight = BukkitUtils.locationFromString(currentGameMap.getRightTesterLightLocation());
+        Location leftLight = BukkitUtils.locationFromString(currentGameMap.getLeftTesterLightLocation());
+
+        Bukkit.getScheduler().runTaskLater(ttt, () -> {
+            rightLight.getBlock().setType(role.getTesterLight());
+            leftLight.getBlock().setType(role.getTesterLight());
+            BukkitUtils.playSoundInRadius(location, 7, 5, 7, role.getTesterSound());
+            enteredTraitorTester = false;
+
+            Bukkit.getScheduler().runTaskLater(ttt, () -> {
+                rightLight.getBlock().setType(Material.WHITE_STAINED_GLASS);
+                leftLight.getBlock().setType(Material.WHITE_STAINED_GLASS);
+            }, 3 * 20);
+        }, 5 * 20);
+    }
+
     public void triggerTraitorTrap(Player player) {
+        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        if (gamePlayer.isSpectator()) {
+            return;
+        }
+
+        if (triggeredTraitorTrap) {
+            player.sendMessage(Constants.PREFIX + "Die Traitor-Falle wurde bereits ausgelöst");
+            return;
+        }
+
+        if (gamePlayer.getRole() != Role.TRAITOR) {
+            player.sendMessage(Constants.PREFIX + "Nur Traitor können diese Falle auslösen");
+            return;
+        }
+
         Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation()).subtract(0, 1, 0);
         List<BlockFace> blockFaces = Arrays.asList(
                 BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST,
                 BlockFace.WEST, BlockFace.SELF, BlockFace.EAST,
                 BlockFace.SOUTH_WEST, BlockFace.SOUTH, BlockFace.SOUTH_EAST);
+
+        player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 3f, 3f);
+        BukkitUtils.sendBroadcastMessage("Die Traitor-Falle wurde ausgelöst");
+        triggeredTraitorTrap = true;
 
         blockFaces
                 .stream()
@@ -122,8 +205,28 @@ public class GameManager {
                     block.setType(Material.AIR);
                     Bukkit.getScheduler().runTaskLater(ttt, () -> block.setType(Material.IRON_BLOCK), 4 * 20);
                 });
+    }
 
-        player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 3f, 3f);
+    public void checkForWin() {
+        if (getTraitors().size() == getAlive().size() || getInnocents().size() + getDetectives().size() == getAlive().size()) {
+            this.gameState = GameState.RESTART;
+            Bukkit.getOnlinePlayers().forEach(this::teleportToLobby);
+
+            Role role = getWinningTeam();
+            BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getText() + " §7haben gewonnen");
+
+            RestartTimer restartTimer = new RestartTimer(ttt);
+            restartTimer.onStart();
+            this.currentTimer = restartTimer;
+        }
+    }
+
+    private Role getWinningTeam() {
+        if(getTraitors().size() == getAlive().size()) {
+            return Role.TRAITOR;
+        }
+
+        return Role.INNOCENT;
     }
 
     public void allocateRoles() {
@@ -248,8 +351,28 @@ public class GameManager {
         this.forceStarted = forceStarted;
     }
 
+    public boolean isEnteredTraitorTester() {
+        return enteredTraitorTester;
+    }
+
+    public void setEnteredTraitorTester(boolean enteredTraitorTester) {
+        this.enteredTraitorTester = enteredTraitorTester;
+    }
+
+    public boolean isTriggeredTraitorTrap() {
+        return triggeredTraitorTrap;
+    }
+
+    public void setTriggeredTraitorTrap(boolean triggeredTraitorTrap) {
+        this.triggeredTraitorTrap = triggeredTraitorTrap;
+    }
+
     public Collection<GamePlayer> getPlayers() {
         return players;
+    }
+
+    public void setPlayers(Collection<GamePlayer> players) {
+        this.players = players;
     }
 }
 

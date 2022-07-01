@@ -38,31 +38,32 @@ public class PlayerInteractListener implements Listener {
                 }
 
                 event.setCancelled(true);
-                ttt.getGameManager().lootRandomItem(player, block);
+                ttt.getGameManager().lootRandomWeapon(player, block);
                 return;
             }
 
             if(block.getType() == Material.ENDER_CHEST) {
+                if(ttt.getGameManager().getGameState() != GameState.INGAME) {
+                    return;
+                }
+
                 event.setCancelled(true);
                 ttt.getGameManager().lootIronSword(player, block);
                 return;
             }
 
             if(block.getType().toString().endsWith("BUTTON")) {
-                if(ttt.getGameManager().getGameState() != GameState.INGAME) {
+                /*if(ttt.getGameManager().getGameState() != GameState.INGAME) {
                     return;
-                }
+                }*/
 
-                Button button = (Button) block.getState().getData();
-                Block blockBehind = block.getRelative(button.getAttachedFace());
-
-                if(blockBehind.getType() == Material.CHISELED_QUARTZ_BLOCK) {
+                if(block.getType() == Material.OAK_BUTTON) {
                     ttt.getGameManager().triggerTraitorTrap(player);
                     return;
                 }
 
-                if(blockBehind.getType() == Material.IRON_BLOCK) {
-                    //TESTER
+                if(block.getType() == Material.STONE_BUTTON) {
+                    ttt.getGameManager().enterTraitorTester(player);
                     return;
                 }
             }

@@ -4,6 +4,7 @@ import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.models.GameMap;
 import de.deroq.ttt.timers.ingame.ProtectionTimer;
 import de.deroq.ttt.timers.TimerTask;
+import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
@@ -24,7 +25,7 @@ public class LobbyTimer extends TimerTask {
 
     @Override
     public void onTick() {
-        if(Bukkit.getOnlinePlayers().size() < Constants.NEEDED_PLAYERS && !ttt.getGameManager().isForceStarted()) {
+        if(ttt.getGameManager().getGameState() != GameState.LOBBY || (Bukkit.getOnlinePlayers().size() < Constants.NEEDED_PLAYERS && !ttt.getGameManager().isForceStarted())) {
             onStop();
             return;
         }
@@ -36,14 +37,12 @@ public class LobbyTimer extends TimerTask {
 
 
         if(Arrays.asList(60, 30, 10, 5, 4, 3, 2, 1).contains(currentSeconds)) {
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                player.sendMessage(Constants.PREFIX + "Die Runde startet in §3" + currentSeconds + " " + (currentSeconds != 1 ? "Sekunden" : "Sekunde"));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 3f, 3f);
-            });
+            BukkitUtils.sendBroadcastMessage("Die Runde startet in §3" + currentSeconds + " " + (currentSeconds != 1 ? "Sekunden" : "Sekunde"));
+            BukkitUtils.sendBroadcastSound(Sound.BLOCK_NOTE_BLOCK_BASS);
 
             if(currentSeconds == 10) {
                 GameMap gameMap = ttt.getGameManager().getCurrentGameMap();
-                Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(Constants.PREFIX + "Es wird auf der Map §3" + gameMap.getMuid() + " §7gespielt, gebaut von: §3" + gameMap.getBuilders()));
+                BukkitUtils.sendBroadcastMessage("Es wird auf der Map §3" + gameMap.getMuid() + " §7gespielt, gebaut von: §3" + gameMap.getBuilders());
             }
         }
     }

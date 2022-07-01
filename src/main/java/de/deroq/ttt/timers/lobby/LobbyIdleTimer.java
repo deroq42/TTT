@@ -2,6 +2,7 @@ package de.deroq.ttt.timers.lobby;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.timers.TimerTask;
+import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
@@ -25,7 +26,7 @@ public class LobbyIdleTimer extends TimerTask {
         }
 
         if(Bukkit.getOnlinePlayers().size() < Constants.NEEDED_PLAYERS) {
-            Bukkit.getOnlinePlayers().forEach(players -> players.sendMessage(Constants.PREFIX + "Es werden §3" + Constants.NEEDED_PLAYERS + " Spieler §7benötigt, um die Runde zu starten"));
+            BukkitUtils.sendBroadcastMessage("Es werden §3" + Constants.NEEDED_PLAYERS + " Spieler §7benötigt, um die Runde zu starten");
         }
     }
 

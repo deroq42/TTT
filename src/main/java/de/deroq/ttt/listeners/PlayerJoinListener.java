@@ -31,14 +31,13 @@ public class PlayerJoinListener implements Listener {
         GamePlayer gamePlayer = GamePlayer.create(player.getUniqueId());
 
         if(ttt.getGameManager().getGameState() == GameState.LOBBY) {
-            Bukkit.getOnlinePlayers().forEach(players -> players.sendMessage(Constants.PREFIX + "§3" + player.getName() + " §7hat die Runde betreten " + BukkitUtils.getOnlinePlayers()));
+            BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat die Runde betreten " + BukkitUtils.getOnlinePlayers());
             ttt.getGameManager().teleportToLobby(player);
             ttt.getGameManager().initLobbyTimer();
-
         }
 
         if(ttt.getGameManager().getGameState() != GameState.LOBBY) {
-            gamePlayer.setSpectator(true, ttt.getGameManager().getAlive());
+            ttt.getGameManager().setSpectator(player);
         }
 
         ttt.getGameManager().getPlayers().add(gamePlayer);

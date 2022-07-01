@@ -1,6 +1,8 @@
 package de.deroq.ttt.game.models;
 
 import de.deroq.ttt.models.Role;
+import de.deroq.ttt.utils.GameState;
+import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -40,7 +42,9 @@ public class GamePlayer {
             player.setGameMode(GameMode.ADVENTURE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100000, 3), false);
             alive.forEach(gamePlayer -> gamePlayer.getPlayer().hidePlayer(player));
-        }else {
+            PlayerUtils.loadInventory(player, GameState.INGAME);
+            setRole(null);
+        } else {
             player.setGameMode(GameMode.SURVIVAL);
             player.removePotionEffect(PotionEffectType.INVISIBILITY);
             alive.forEach(gamePlayer -> gamePlayer.getPlayer().showPlayer(player));

@@ -2,7 +2,9 @@ package de.deroq.ttt.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 public class BukkitUtils {
 
@@ -28,5 +30,21 @@ public class BukkitUtils {
         float yaw = Float.parseFloat(coordinates[4]);
         float pitch = Float.parseFloat(coordinates[5]);
         return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static void sendBroadcastMessage(String message) {
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(Constants.PREFIX + message));
+    }
+
+    public static void sendBroadcastSound(Sound sound) {
+        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, 3f, 3f));
+    }
+
+    public static void playSoundInRadius(Location location, int x, int y, int z, Sound sound) {
+        location.getWorld().getNearbyEntities(location, x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
+    }
+
+    public static void playSoundInRadius(Player player, int x, int y, int z, Sound sound) {
+        player.getNearbyEntities(x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
     }
 }
