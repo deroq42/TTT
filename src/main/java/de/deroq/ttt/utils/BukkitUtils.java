@@ -40,11 +40,11 @@ public class BukkitUtils {
         Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, 3f, 3f));
     }
 
-    public static void playSoundInRadius(Location location, int x, int y, int z, Sound sound) {
+    public static void sendBroadcastSoundInRadius(Location location, int x, int y, int z, Sound sound) {
         location.getWorld().getNearbyEntities(location, x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
     }
 
-    public static void playSoundInRadius(Player player, int x, int y, int z, Sound sound) {
+    public static void sendBroadcastSoundInRadius(Player player, int x, int y, int z, Sound sound) {
         player.getNearbyEntities(x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
     }
 }

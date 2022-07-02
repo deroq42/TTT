@@ -148,7 +148,7 @@ public class GameManager {
 
         Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation());
         player.teleport(location);
-        BukkitUtils.playSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
+        BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
         player.getNearbyEntities(2, 0, 2).forEach(entity -> entity.teleport(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(-2))));
         BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat den Traitor-Tester betreten");
         evaluateTraitorTesterResult(location, role);
@@ -162,7 +162,7 @@ public class GameManager {
         Bukkit.getScheduler().runTaskLater(ttt, () -> {
             rightLight.getBlock().setType(role.getTesterLight());
             leftLight.getBlock().setType(role.getTesterLight());
-            BukkitUtils.playSoundInRadius(location, 7, 5, 7, role.getTesterSound());
+            BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, role.getTesterSound());
             enteredTraitorTester = false;
 
             Bukkit.getScheduler().runTaskLater(ttt, () -> {
