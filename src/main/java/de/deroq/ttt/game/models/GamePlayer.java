@@ -38,12 +38,15 @@ public class GamePlayer {
             return;
         }
 
+        PlayerUtils.loadPlayer(player);
+
         if(spectator) {
             player.setGameMode(GameMode.ADVENTURE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100000, 3), false);
             alive.forEach(gamePlayer -> gamePlayer.getPlayer().hidePlayer(player));
             PlayerUtils.loadInventory(player, GameState.INGAME);
-            setRole(null);
+
+            this.role = null;
         } else {
             player.setGameMode(GameMode.SURVIVAL);
             player.removePotionEffect(PotionEffectType.INVISIBILITY);

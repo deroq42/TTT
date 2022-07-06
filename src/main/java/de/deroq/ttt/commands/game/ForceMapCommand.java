@@ -1,4 +1,4 @@
-package de.deroq.ttt.commands;
+package de.deroq.ttt.commands.game;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.Constants;

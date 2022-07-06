@@ -51,10 +51,19 @@ public abstract class TimerTask {
         }.runTaskTimer(ttt, delay, period);
     }
 
+    /**
+     * Will be executed every tick.
+     */
     public abstract void onTick();
 
+    /**
+     * Will be executed when the timer has been finished.
+     */
     public abstract void onFinish();
 
+    /**
+     * Stops the timer.
+     */
     public void onStop() {
         if(bukkitTask == null) {
             return;

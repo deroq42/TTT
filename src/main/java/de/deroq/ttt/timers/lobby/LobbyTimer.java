@@ -1,7 +1,7 @@
 package de.deroq.ttt.timers.lobby;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.game.models.GameMap;
+import de.deroq.ttt.game.map.models.GameMap;
 import de.deroq.ttt.timers.ingame.ProtectionTimer;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.BukkitUtils;
@@ -16,16 +16,19 @@ public class LobbyTimer extends TimerTask {
 
     //WHERE THE TIMER BEGINS
     private final int TOTAL_SECONDS = 61;
+    private final int MIN_PLAYERS;
 
     public LobbyTimer(TTT ttt) {
         super(ttt, true, 0, 20);
+        this.MIN_PLAYERS = ttt.getFileManager().getSettingsConfig().getMinPlayers();
+
         setTotalSeconds(TOTAL_SECONDS);
         setCurrentSeconds(TOTAL_SECONDS);
     }
 
     @Override
     public void onTick() {
-        if(ttt.getGameManager().getGameState() != GameState.LOBBY || (Bukkit.getOnlinePlayers().size() < Constants.NEEDED_PLAYERS && !ttt.getGameManager().isForceStarted())) {
+        if(ttt.getGameManager().getGameState() != GameState.LOBBY || (Bukkit.getOnlinePlayers().size() < MIN_PLAYERS && !ttt.getGameManager().isForceStarted())) {
             onStop();
             return;
         }

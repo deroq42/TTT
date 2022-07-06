@@ -1,4 +1,4 @@
-package de.deroq.ttt.commands;
+package de.deroq.ttt.commands.misc;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.BukkitUtils;
@@ -30,9 +30,9 @@ public class SetLobbyCommand extends Command {
             return true;
         }
 
-        ttt.getFileManager().getLocationsConfig().getLocations().put(Constants.LOBBY_LOCATION_NAME, BukkitUtils.locationToString(player.getLocation()));
+        ttt.getFileManager().getSettingsConfig().setWaitingLobbyLocation(BukkitUtils.locationToString(player.getLocation()));
         try {
-            ttt.getFileManager().saveConfig(ttt.getFileManager().getLocationsConfig());
+            ttt.getFileManager().saveConfig(ttt.getFileManager().getSettingsConfig());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

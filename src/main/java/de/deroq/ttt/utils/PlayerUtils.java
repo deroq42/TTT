@@ -16,10 +16,13 @@ public class PlayerUtils {
     public static void loadPlayer(Player player) {
         player.setHealth(20);
         player.setFoodLevel(20);
-        player.setLevel(0);
-        player.setExp(0);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+        player.setLevel(0);
+        player.setExp(0);
         player.setGameMode(GameMode.SURVIVAL);
+        player.setAllowFlight(false);
+        player.setFlying(false);
     }
 }

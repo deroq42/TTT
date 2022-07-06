@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 public class BukkitUtils {
 
-    public static String getOnlinePlayers() {
-        return "§7[§3" + Bukkit.getOnlinePlayers().size() + "§7/§3" + Constants.NEEDED_PLAYERS + "§7]";
+    public static String getOnlinePlayers(int neededPlayers) {
+        return "§7[§3" + Bukkit.getOnlinePlayers().size() + "§7/§3" + neededPlayers + "§7]";
     }
 
     public static String locationToString(Location location) {

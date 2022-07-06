@@ -15,9 +15,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class PlayerJoinListener implements Listener {
 
     private final TTT ttt;
+    private final int MIN_PLAYERS;
 
     public PlayerJoinListener(TTT ttt) {
         this.ttt = ttt;
+        this.MIN_PLAYERS = ttt.getFileManager().getSettingsConfig().getMinPlayers();
     }
 
     @EventHandler
@@ -31,7 +33,7 @@ public class PlayerJoinListener implements Listener {
         GamePlayer gamePlayer = GamePlayer.create(player.getUniqueId());
 
         if(ttt.getGameManager().getGameState() == GameState.LOBBY) {
-            BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat die Runde betreten " + BukkitUtils.getOnlinePlayers());
+            BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat die Runde betreten " + BukkitUtils.getOnlinePlayers(MIN_PLAYERS));
             ttt.getGameManager().teleportToLobby(player);
             ttt.getGameManager().initLobbyTimer();
         }
@@ -40,6 +42,6 @@ public class PlayerJoinListener implements Listener {
             ttt.getGameManager().setSpectator(player);
         }
 
-        ttt.getGameManager().getPlayers().add(gamePlayer);
+        ttt.getGameManager().getGamePlayers().add(gamePlayer);
     }
 }

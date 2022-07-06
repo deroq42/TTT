@@ -3,11 +3,13 @@ package de.deroq.ttt;
 import de.deroq.database.models.DatabaseServiceBuilder;
 import de.deroq.database.models.DatabaseServiceType;
 import de.deroq.database.services.mongo.MongoDatabaseService;
-import de.deroq.ttt.commands.ForceMapCommand;
+import de.deroq.ttt.commands.game.ForceMapCommand;
+import de.deroq.ttt.commands.game.StartCommand;
 import de.deroq.ttt.commands.map.*;
-import de.deroq.ttt.commands.SetLobbyCommand;
-import de.deroq.ttt.commands.StartCommand;
-import de.deroq.ttt.game.GameMapManager;
+import de.deroq.ttt.commands.misc.SetLobbyCommand;
+import de.deroq.ttt.commands.misc.SetMaxPlayersCommand;
+import de.deroq.ttt.commands.misc.SetMinPlayersCommand;
+import de.deroq.ttt.game.map.GameMapManager;
 import de.deroq.ttt.listeners.*;
 import de.deroq.ttt.config.FileManager;
 import de.deroq.ttt.game.GameManager;
@@ -81,6 +83,8 @@ public class TTT extends JavaPlugin {
         commandMap.register("setTester", new SetTesterCommand("setTester", this));
         commandMap.register("addTesterLight", new AddTesterLightCommand("addTesterLight", this));
         commandMap.register("addBuilder", new AddBuilderCommand("addBuilder", this));
+        commandMap.register("setMaxPlayers", new SetMaxPlayersCommand("setMaxPlayers", this));
+        commandMap.register("setMinPlayers", new SetMinPlayersCommand("setMinPlayers", this));
     }
 
     public MongoDatabaseService getDatabaseService() {

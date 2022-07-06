@@ -10,13 +10,13 @@ public enum Role {
     TRAITOR("§4", "Traitor", Material.RED_STAINED_GLASS, Sound.BLOCK_NOTE_BLOCK_BASS);
 
     private final String colorCode;
-    private final String text;
+    private final String name;
     private final Material testerLight;
     private final Sound testerSound;
 
-    Role(String colorCode, String text, Material testerLight, Sound testerSound) {
+    Role(String colorCode, String name, Material testerLight, Sound testerSound) {
         this.colorCode = colorCode;
-        this.text = text;
+        this.name = name;
         this.testerLight = testerLight;
         this.testerSound = testerSound;
     }
@@ -25,8 +25,8 @@ public enum Role {
         return colorCode;
     }
 
-    public String getText() {
-        return text;
+    public String getName() {
+        return name;
     }
 
     public Material getTesterLight() {

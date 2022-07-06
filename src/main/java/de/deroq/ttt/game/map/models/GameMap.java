@@ -1,10 +1,10 @@
-package de.deroq.ttt.game.models;
+package de.deroq.ttt.game.map.models;
 
 import java.util.List;
 
 public class GameMap {
 
-    private String muid;
+    private final String muid;
     private List<String> builders;
     private List<String> spawnLocations;
     private String testerLocation;
@@ -13,16 +13,12 @@ public class GameMap {
     private String spectatorLocation;
 
     //Public constructor due to pojo exceptions.
-    public GameMap() {
-
+    public GameMap(String muid) {
+        this.muid = muid;
     }
 
     public String getMuid() {
         return muid;
-    }
-
-    public void setMuid(String muid) {
-        this.muid = muid;
     }
 
     public List<String> getBuilders() {
@@ -71,11 +67,5 @@ public class GameMap {
 
     public void setSpectatorLocation(String spectatorLocation) {
         this.spectatorLocation = spectatorLocation;
-    }
-
-    public static GameMap create(String muid) {
-        GameMap gameMap = new GameMap();
-        gameMap.setMuid(muid);
-        return gameMap;
     }
 }

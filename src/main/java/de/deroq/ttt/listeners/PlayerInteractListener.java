@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Button;
 
 public class PlayerInteractListener implements Listener {
 
@@ -53,9 +52,9 @@ public class PlayerInteractListener implements Listener {
             }
 
             if(block.getType().toString().endsWith("BUTTON")) {
-                /*if(ttt.getGameManager().getGameState() != GameState.INGAME) {
+                if(ttt.getGameManager().getGameState() != GameState.INGAME) {
                     return;
-                }*/
+                }
 
                 if(block.getType() == Material.OAK_BUTTON) {
                     ttt.getGameManager().triggerTraitorTrap(player);
@@ -79,7 +78,6 @@ public class PlayerInteractListener implements Listener {
 
             if(itemStack.isSimilar(Constants.LOBBY_ITEM)) {
                 player.kickPlayer("");
-                return;
             }
         }
     }

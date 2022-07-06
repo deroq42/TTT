@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import java.util.Optional;
+
 public class EntityDamageByEntityListener implements Listener {
 
     private final TTT ttt;
@@ -30,8 +32,15 @@ public class EntityDamageByEntityListener implements Listener {
 
         Player damaged = (Player) event.getEntity();
         Player damager = (Player) event.getDamager();
-        GamePlayer damagedGamePlayer = ttt.getGameManager().getGamePlayer(damaged.getUniqueId()).get();
-        GamePlayer damagerGamePlayer = ttt.getGameManager().getGamePlayer(damager.getUniqueId()).get();
+
+        Optional<GamePlayer> optionalDamagedGamePlayer = ttt.getGameManager().getGamePlayer(damaged.getUniqueId());
+        Optional<GamePlayer> optionalDamagerGamePlayer = ttt.getGameManager().getGamePlayer(damager.getUniqueId());
+        if(!optionalDamagedGamePlayer.isPresent() || !optionalDamagerGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer damagedGamePlayer = optionalDamagedGamePlayer.get();
+        GamePlayer damagerGamePlayer = optionalDamagerGamePlayer.get();
 
         if(damagedGamePlayer.isSpectator() || damagerGamePlayer.isSpectator()) {
             event.setCancelled(true);

@@ -1,22 +1,21 @@
 package de.deroq.ttt.config;
 
 import com.google.gson.Gson;
-import de.deroq.ttt.config.models.LocationsConfig;
+import de.deroq.ttt.config.models.SettingsConfig;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Optional;
 
 public class FileManager {
 
     private final File FOLDER;
-    private final File LOCATIONS_FILE;
-    private LocationsConfig locationsConfig;
+    private final File SETTINGS_FILE;
+    private SettingsConfig settingsConfig;
 
     public FileManager() {
         this.FOLDER = new File("plugins/TTT/");
-        this.LOCATIONS_FILE = new File(FOLDER.getPath(), "locations.json");
+        this.SETTINGS_FILE = new File(FOLDER.getPath(), "settings.json");
     }
 
     public void loadFiles() {
@@ -30,21 +29,21 @@ public class FileManager {
                 return;
             }
 
-            this.locationsConfig = (LocationsConfig) readConfig(LOCATIONS_FILE, LocationsConfig.class);
+            this.settingsConfig = (SettingsConfig) readConfig(SETTINGS_FILE, SettingsConfig.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void createLocationsConfig() throws IOException {
-        if(!LOCATIONS_FILE.exists()) {
-            if (!LOCATIONS_FILE.createNewFile()) {
+        if(!SETTINGS_FILE.exists()) {
+            if (!SETTINGS_FILE.createNewFile()) {
                 throw new IOException("Error while creating Roles file: File has not been created.");
             }
         }
 
-        this.locationsConfig = LocationsConfig.create(LOCATIONS_FILE, new HashMap<>());
-        saveConfig(locationsConfig);
+        this.settingsConfig = SettingsConfig.create(SETTINGS_FILE);
+        saveConfig(settingsConfig);
     }
 
     public void saveConfig(Config config) throws IOException {
@@ -69,7 +68,7 @@ public class FileManager {
         return new Gson().fromJson(new FileReader(file), clazz);
     }
 
-    public LocationsConfig getLocationsConfig() {
-        return locationsConfig;
+    public SettingsConfig getSettingsConfig() {
+        return settingsConfig;
     }
 }

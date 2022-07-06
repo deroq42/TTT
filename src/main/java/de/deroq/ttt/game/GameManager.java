@@ -1,7 +1,7 @@
 package de.deroq.ttt.game;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.game.models.GameMap;
+import de.deroq.ttt.game.map.models.GameMap;
 import de.deroq.ttt.models.Role;
 import de.deroq.ttt.timers.lobby.LobbyIdleTimer;
 import de.deroq.ttt.timers.lobby.LobbyTimer;
@@ -11,7 +11,6 @@ import de.deroq.ttt.timers.restart.RestartTimer;
 import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
-import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,50 +29,72 @@ public class GameManager {
     private GameState gameState;
     private TimerTask currentTimer;
     private GameMap currentGameMap;
-    private Collection<GamePlayer> players;
+    private Collection<GamePlayer> gamePlayers;
     private boolean forceStarted;
     private boolean enteredTraitorTester;
     private boolean triggeredTraitorTrap;
+    private final int MIN_PLAYERS;
 
+    /**
+     * Constructor of the class.
+     */
     public GameManager(TTT ttt) {
         this.ttt = ttt;
         this.gameState = GameState.LOBBY;
-        this.players = new ArrayList<>();
+        this.gamePlayers = new ArrayList<>();
         this.forceStarted = false;
         this.enteredTraitorTester = false;
         this.triggeredTraitorTrap = false;
+        this.MIN_PLAYERS = ttt.getFileManager().getSettingsConfig().getMinPlayers();
 
         initLobbyIdleTimer();
     }
 
+    /**
+     * Starts the lobby timer when enough players are online.
+     */
     public void initLobbyTimer() {
         if (forceStarted) {
             return;
         }
 
-        if (Bukkit.getOnlinePlayers().size() == Constants.NEEDED_PLAYERS) {
+        if (Bukkit.getOnlinePlayers().size() == MIN_PLAYERS) {
             setCurrentTimer(createLobbyTimer());
         }
     }
 
+    /**
+     * @return a new LobbyTimer.
+     */
     public TimerTask createLobbyTimer() {
         LobbyTimer lobbyTimer = new LobbyTimer(ttt);
         lobbyTimer.onStart();
         return lobbyTimer;
     }
 
+    /**
+     * Starts the lobby idle timer when too few players are online.
+     */
     private void initLobbyIdleTimer() {
         LobbyIdleTimer lobbyIdleTimer = new LobbyIdleTimer(ttt);
         lobbyIdleTimer.onStart();
     }
 
+    /**
+     * Teleports a player to the lobby location.
+     *
+     * @param player The player to teleport.
+     */
     public void teleportToLobby(Player player) {
-        Location lobbyLocation = ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME);
+        String lobbyLocation = ttt.getFileManager().getSettingsConfig().getWaitingLobbyLocation();
         if (lobbyLocation != null) {
-            player.teleport(ttt.getFileManager().getLocationsConfig().getLocation(Constants.LOBBY_LOCATION_NAME));
+            player.teleport(BukkitUtils.locationFromString(lobbyLocation));
         }
     }
 
+    /**
+     * Teleports all players to the spawn locations on the current map.
+     */
     public void teleportToSpawns() {
         int spawnLocation = 0;
         List<String> spawnLocations = currentGameMap.getSpawnLocations();
@@ -84,14 +105,34 @@ public class GameManager {
         }
     }
 
+    /**
+     * Sets a player into the spectator mode.
+     *
+     * @param player The player who is to spectate.
+     */
     public void setSpectator(Player player) {
-        PlayerUtils.loadPlayer(player);
-        getGamePlayer(player.getUniqueId()).get().setSpectator(true, getAlive());
+        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        optionalGamePlayer.get().setSpectator(true, getAlive());
         player.teleport(BukkitUtils.locationFromString(currentGameMap.getSpectatorLocation()));
     }
 
+    /**
+     * Loots a random item from the chest.
+     *
+     * @param player The player who loots the item.
+     * @param block The clicked chest.
+     */
     public void lootRandomWeapon(Player player, Block block) {
-        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer gamePlayer = optionalGamePlayer.get();
         if (gamePlayer.isSpectator()) {
             return;
         }
@@ -118,8 +159,20 @@ public class GameManager {
         }
     }
 
+    /**
+     * Loots an iron sword from the chest.
+     *
+     * @param player The player who loots the sword.
+     * @param block The clicked chest.
+     */
     public void lootIronSword(Player player, Block block) {
-        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer gamePlayer = optionalGamePlayer.get();
+
         if (gamePlayer.isSpectator()) {
             return;
         }
@@ -129,8 +182,18 @@ public class GameManager {
         block.setType(Material.AIR);
     }
 
+    /**
+     * Enters into the traitor-tester.
+     *
+     * @param player The player who enters.
+     */
     public void enterTraitorTester(Player player) {
-        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer gamePlayer = optionalGamePlayer.get();
         if (gamePlayer.isSpectator()) {
             return;
         }
@@ -155,6 +218,12 @@ public class GameManager {
         enteredTraitorTester = true;
     }
 
+    /**
+     * Evaluates the traitor-tester.
+     *
+     * @param location The location of the traitor-tester
+     * @param role The role of the player who entered the traitor-tester.
+     */
     private void evaluateTraitorTesterResult(Location location, Role role) {
         Location rightLight = BukkitUtils.locationFromString(currentGameMap.getRightTesterLightLocation());
         Location leftLight = BukkitUtils.locationFromString(currentGameMap.getLeftTesterLightLocation());
@@ -172,8 +241,18 @@ public class GameManager {
         }, 5 * 20);
     }
 
+    /**
+     * Triggers the traitor trap.
+     *
+     * @param player The player who triggers the trap.
+     */
     public void triggerTraitorTrap(Player player) {
-        GamePlayer gamePlayer = getGamePlayer(player.getUniqueId()).get();
+        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer gamePlayer = optionalGamePlayer.get();
         if (gamePlayer.isSpectator()) {
             return;
         }
@@ -207,13 +286,16 @@ public class GameManager {
                 });
     }
 
+    /**
+     * Checks for the win.
+     */
     public void checkForWin() {
         if (getTraitors().size() == getAlive().size() || getInnocents().size() + getDetectives().size() == getAlive().size()) {
             this.gameState = GameState.RESTART;
             Bukkit.getOnlinePlayers().forEach(this::teleportToLobby);
 
             Role role = getWinningTeam();
-            BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getText() + " §7haben gewonnen");
+            BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " §7haben gewonnen");
 
             RestartTimer restartTimer = new RestartTimer(ttt);
             restartTimer.onStart();
@@ -221,6 +303,11 @@ public class GameManager {
         }
     }
 
+    /**
+     * Gets the team who won the game.
+     *
+     * @return the role of the winning team.
+     */
     private Role getWinningTeam() {
         if(getTraitors().size() == getAlive().size()) {
             return Role.TRAITOR;
@@ -229,12 +316,18 @@ public class GameManager {
         return Role.INNOCENT;
     }
 
+    /**
+     * Allocates all players to the roles.
+     */
     public void allocateRoles() {
         allocateTraitors();
         allocateDetectives();
         allocateInnocents();
     }
 
+    /**
+     * Allocates random players to the traitor role by the guide value 0.34.
+     */
     private void allocateTraitors() {
         double traitorsValue = Bukkit.getOnlinePlayers().size() * Constants.TRAITOR_ALLOCATE_RATE;
         int traitors = (int) Math.round(traitorsValue);
@@ -249,6 +342,9 @@ public class GameManager {
         }
     }
 
+    /**
+     * Allocates random players to the detective role by the guide value 0.15.
+     */
     private void allocateDetectives() {
         double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
         int detectives = (int) Math.round(detectivesValue);
@@ -263,6 +359,9 @@ public class GameManager {
         }
     }
 
+    /**
+     * Allocates all players without a role to the innocent role.
+     */
     private void allocateInnocents() {
         List<GamePlayer> players = getNoRoles();
         for (GamePlayer gamePlayer : players) {
@@ -270,27 +369,32 @@ public class GameManager {
         }
     }
 
+    /**
+     * Get a GamePlayer by its uuid.
+     *
+     * @param uuid The uuid of the GamePlayer.
+     * @return an Optional of a GamePlayer.
+     */
     public Optional<GamePlayer> getGamePlayer(UUID uuid) {
-        return players
+        return gamePlayers
                 .stream()
                 .filter(gamePlayer -> gamePlayer.getUuid().equals(uuid))
                 .findFirst();
     }
 
+    /**
+     * @return a List of GamePlayers who are still alive.
+     */
     public List<GamePlayer> getAlive() {
-        return players
+        return gamePlayers
                 .stream()
                 .filter(gamePlayer -> !gamePlayer.isSpectator())
                 .collect(Collectors.toList());
     }
 
-    public List<GamePlayer> getSpectators() {
-        return players
-                .stream()
-                .filter(GamePlayer::isSpectator)
-                .collect(Collectors.toList());
-    }
-
+    /**
+     * @return a List of GamePlayers who got the traitor role.
+     */
     public List<GamePlayer> getTraitors() {
         return getAlive()
                 .stream()
@@ -298,6 +402,9 @@ public class GameManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return a List of GamePlayers who got the detective role.
+     */
     public List<GamePlayer> getDetectives() {
         return getAlive()
                 .stream()
@@ -305,6 +412,9 @@ public class GameManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return a List of GamePlayers who got the innocent role.
+     */
     public List<GamePlayer> getInnocents() {
         return getAlive()
                 .stream()
@@ -312,6 +422,9 @@ public class GameManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return a List of GamePlayers who got no role.
+     */
     public List<GamePlayer> getNoRoles() {
         return getAlive()
                 .stream()
@@ -319,6 +432,9 @@ public class GameManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @return the current state.
+     */
     public GameState getGameState() {
         return gameState;
     }
@@ -327,6 +443,9 @@ public class GameManager {
         this.gameState = gameState;
     }
 
+    /**
+     * @return the current timer.
+     */
     public TimerTask getCurrentTimer() {
         return currentTimer;
     }
@@ -335,6 +454,9 @@ public class GameManager {
         this.currentTimer = currentTimer;
     }
 
+    /**
+     * @return the current map on which the game is played.
+     */
     public GameMap getCurrentGameMap() {
         return currentGameMap;
     }
@@ -343,6 +465,9 @@ public class GameManager {
         this.currentGameMap = currentGameMap;
     }
 
+    /**
+     * @return true if the game has been started by command.
+     */
     public boolean isForceStarted() {
         return forceStarted;
     }
@@ -351,6 +476,9 @@ public class GameManager {
         this.forceStarted = forceStarted;
     }
 
+    /**
+     * @return true if currently one is in the traitor-tester.
+     */
     public boolean isEnteredTraitorTester() {
         return enteredTraitorTester;
     }
@@ -359,6 +487,9 @@ public class GameManager {
         this.enteredTraitorTester = enteredTraitorTester;
     }
 
+    /**
+     * @return true if the traitor trap has already been triggered.
+     */
     public boolean isTriggeredTraitorTrap() {
         return triggeredTraitorTrap;
     }
@@ -367,12 +498,15 @@ public class GameManager {
         this.triggeredTraitorTrap = triggeredTraitorTrap;
     }
 
-    public Collection<GamePlayer> getPlayers() {
-        return players;
+    /**
+     * @return a Collection of GamePlayers.
+     */
+    public Collection<GamePlayer> getGamePlayers() {
+        return gamePlayers;
     }
 
-    public void setPlayers(Collection<GamePlayer> players) {
-        this.players = players;
+    public void setGamePlayers(Collection<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
     }
 }
 

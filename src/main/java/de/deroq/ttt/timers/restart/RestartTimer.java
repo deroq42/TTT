@@ -1,13 +1,10 @@
 package de.deroq.ttt.timers.restart;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.game.models.GameMap;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.BukkitUtils;
-import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 
 import java.util.Arrays;
 

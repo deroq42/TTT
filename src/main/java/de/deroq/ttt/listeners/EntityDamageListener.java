@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.Optional;
+
 public class EntityDamageListener implements Listener {
 
     private final TTT ttt;
@@ -28,7 +30,12 @@ public class EntityDamageListener implements Listener {
         }
 
         Player player = (Player) event.getEntity();
-        GamePlayer gamePlayer = ttt.getGameManager().getGamePlayer(player.getUniqueId()).get();
+        Optional<GamePlayer> optionalGamePlayer = ttt.getGameManager().getGamePlayer(player.getUniqueId());
+        if(!optionalGamePlayer.isPresent()) {
+            return;
+        }
+
+        GamePlayer gamePlayer = optionalGamePlayer.get();
 
         if(gamePlayer.isSpectator()) {
             event.setCancelled(true);
