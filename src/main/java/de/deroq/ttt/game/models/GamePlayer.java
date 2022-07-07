@@ -22,10 +22,6 @@ public class GamePlayer {
         this.uuid = uuid;
     }
 
-    public static GamePlayer create(UUID uuid) {
-        return new GamePlayer(uuid);
-    }
-
     public boolean isSpectator() {
         return spectator;
     }
@@ -72,5 +68,9 @@ public class GamePlayer {
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
+    }
+
+    public static GamePlayer create(UUID uuid) {
+        return new GamePlayer(uuid);
     }
 }

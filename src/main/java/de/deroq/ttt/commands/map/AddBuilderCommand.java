@@ -1,7 +1,6 @@
 package de.deroq.ttt.commands.map;
 
 import de.deroq.ttt.TTT;
-import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

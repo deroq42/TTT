@@ -1,6 +1,6 @@
 package de.deroq.ttt;
 
-import de.deroq.database.models.DatabaseServiceBuilder;
+import de.deroq.database.models.DatabaseService;
 import de.deroq.database.models.DatabaseServiceType;
 import de.deroq.database.services.mongo.MongoDatabaseService;
 import de.deroq.ttt.commands.game.ForceMapCommand;
@@ -42,7 +42,7 @@ public class TTT extends JavaPlugin {
     }
 
     private void initDatabase() {
-        this.databaseService = (MongoDatabaseService) new DatabaseServiceBuilder(DatabaseServiceType.MONGO)
+        this.databaseService = (MongoDatabaseService) new DatabaseService.builder(DatabaseServiceType.MONGO)
                 .setHost("localhost")
                 .setUsername("root")
                 .setDatabase("ttt")

@@ -1,6 +1,9 @@
 package de.deroq.ttt.config.models;
 
 import de.deroq.ttt.config.Config;
+import de.deroq.ttt.utils.BukkitUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.io.File;
 
@@ -12,6 +15,9 @@ public class SettingsConfig extends Config {
 
     private SettingsConfig(File file) {
         super(file.getName());
+        this.waitingLobbyLocation = BukkitUtils.locationToString(new Location(Bukkit.getWorld("world"), 0, 70, 0));
+        this.minPlayers = 2;
+        this.maxPlayers = 8;
     }
 
     public String getWaitingLobbyLocation() {

@@ -25,7 +25,7 @@ public class FileManager {
             }
 
             if(FOLDER.isDirectory() && FOLDER.listFiles().length == 0) {
-                createLocationsConfig();
+                createSettingsConfig();
                 return;
             }
 
@@ -35,10 +35,10 @@ public class FileManager {
         }
     }
 
-    private void createLocationsConfig() throws IOException {
+    private void createSettingsConfig() throws IOException {
         if(!SETTINGS_FILE.exists()) {
             if (!SETTINGS_FILE.createNewFile()) {
-                throw new IOException("Error while creating Roles file: File has not been created.");
+                throw new IOException("Error while creating Settings file: File has not been created.");
             }
         }
 

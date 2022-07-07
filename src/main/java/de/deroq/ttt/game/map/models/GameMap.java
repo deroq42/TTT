@@ -1,10 +1,11 @@
 package de.deroq.ttt.game.map.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap {
 
-    private final String muid;
+    private String muid;
     private List<String> builders;
     private List<String> spawnLocations;
     private String testerLocation;
@@ -12,13 +13,24 @@ public class GameMap {
     private String leftTesterLightLocation;
     private String spectatorLocation;
 
-    //Public constructor due to pojo exceptions.
-    public GameMap(String muid) {
+    private GameMap(String muid) {
         this.muid = muid;
+
+        this.builders = new ArrayList<>();
+        this.spawnLocations = new ArrayList<>();
+    }
+
+    /* Public constructor due to pojo exceptions. */
+    public GameMap() {
+
     }
 
     public String getMuid() {
         return muid;
+    }
+
+    public void setMuid(String muid) {
+        this.muid = muid;
     }
 
     public List<String> getBuilders() {
@@ -67,5 +79,9 @@ public class GameMap {
 
     public void setSpectatorLocation(String spectatorLocation) {
         this.spectatorLocation = spectatorLocation;
+    }
+
+    public static GameMap create(String muid) {
+        return new GameMap(muid);
     }
 }

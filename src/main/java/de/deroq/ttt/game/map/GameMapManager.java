@@ -33,7 +33,7 @@ public class GameMapManager {
         return databaseServiceMethods.onInsert(
                 collection,
                 Filters.eq("muid", muid),
-                new GameMap(muid));
+                GameMap.create(muid));
     }
 
     /**
