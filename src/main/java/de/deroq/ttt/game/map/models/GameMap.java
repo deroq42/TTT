@@ -13,9 +13,9 @@ public class GameMap {
     private String leftTesterLightLocation;
     private String spectatorLocation;
 
-    private GameMap(String muid) {
+    /* Public constructor due to pojo exceptions. */
+    public GameMap(String muid) {
         this.muid = muid;
-
         this.builders = new ArrayList<>();
         this.spawnLocations = new ArrayList<>();
     }
@@ -79,9 +79,5 @@ public class GameMap {
 
     public void setSpectatorLocation(String spectatorLocation) {
         this.spectatorLocation = spectatorLocation;
-    }
-
-    public static GameMap create(String muid) {
-        return new GameMap(muid);
     }
 }
