@@ -1,10 +1,10 @@
 package de.deroq.ttt.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 public class BukkitUtils {
 
@@ -46,5 +46,19 @@ public class BukkitUtils {
 
     public static void sendBroadcastSoundInRadius(Player player, int x, int y, int z, Sound sound) {
         player.getNearbyEntities(x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
+    }
+
+    public static void spawnFirework(Location location) {
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        fireworkMeta.setPower(2);
+        fireworkMeta.addEffect(FireworkEffect.builder()
+                .withColor(Color.MAROON)
+                .flicker(true)
+                .trail(true)
+                .build());
+
+        firework.setFireworkMeta(fireworkMeta);
+        firework.detonate();
     }
 }

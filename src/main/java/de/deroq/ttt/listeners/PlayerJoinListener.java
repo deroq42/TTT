@@ -36,10 +36,8 @@ public class PlayerJoinListener implements Listener {
             BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat die Runde betreten " + BukkitUtils.getOnlinePlayers(MIN_PLAYERS));
             ttt.getGameManager().teleportToLobby(player);
             ttt.getGameManager().initLobbyTimer();
-        }
-
-        if(ttt.getGameManager().getGameState() != GameState.LOBBY) {
-            ttt.getGameManager().setSpectator(player);
+        } else {
+            ttt.getGameManager().setSpectator(gamePlayer, true);
         }
 
         ttt.getGameManager().getGamePlayers().add(gamePlayer);

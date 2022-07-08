@@ -36,7 +36,6 @@ public class EntityDamageListener implements Listener {
         }
 
         GamePlayer gamePlayer = optionalGamePlayer.get();
-
         if(gamePlayer.isSpectator()) {
             event.setCancelled(true);
         }

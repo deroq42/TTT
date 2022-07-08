@@ -23,26 +23,38 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player killed = event.getEntity();
         Player killer = killed.getKiller();
+        event.setDeathMessage(null);
+        event.getDrops().clear();
 
         Optional<GamePlayer> optionalKilledGamePlayer = ttt.getGameManager().getGamePlayer(killed.getUniqueId());
-        Optional<GamePlayer> optionalKillerGamePlayer = ttt.getGameManager().getGamePlayer(killer.getUniqueId());
-        if(!optionalKilledGamePlayer.isPresent() || !optionalKillerGamePlayer.isPresent()) {
+        if(!optionalKilledGamePlayer.isPresent()) {
             return;
         }
 
         GamePlayer killedGamePlayer = optionalKilledGamePlayer.get();
-        GamePlayer killerGamePlayer = optionalKillerGamePlayer.get();
         Role killedRole = killedGamePlayer.getRole();
-        Role killerRole = killerGamePlayer.getRole();
 
-        event.setDeathMessage(null);
-        event.getDrops().clear();
+        if(killer == null) {
+            killed.sendMessage(Constants.PREFIX + "Du bist gestorben");
+        } else {
+            Optional<GamePlayer> optionalKillerGamePlayer = ttt.getGameManager().getGamePlayer(killer.getUniqueId());
+            if(!optionalKillerGamePlayer.isPresent()) {
+                return;
+            }
 
-        killed.sendMessage(Constants.PREFIX + "Du wurdest von " + killerRole.getColorCode() + killer.getName() + " §7getötet");
-        killer.sendMessage(Constants.PREFIX + "Du hast §3" + killed.getName() + " §7getötet");
-        killer.sendMessage(Constants.PREFIX + "Du hast einen " + killedRole.getColorCode() + killedRole.getName() + " §7getötet");
+            GamePlayer killerGamePlayer = optionalKillerGamePlayer.get();
+            Role killerRole = killerGamePlayer.getRole();
 
-       ttt.getGameManager().setSpectator(killed);
-        ttt.getGameManager().checkForWin();
+            killed.sendMessage(Constants.PREFIX + "Du wurdest von " + killerRole.getColorCode() + killer.getName() + " §7getötet");
+            killer.sendMessage(Constants.PREFIX + "Du hast §3" + killed.getName() + " §7getötet");
+            killer.sendMessage(Constants.PREFIX + "Du hast einen " + killedRole.getColorCode() + killedRole.getName() + " §7getötet");
+        }
+
+        ttt.getGameManager().setSpectator(killedGamePlayer, true);
+
+        Role role = ttt.getGameManager().checkForWin();
+        if(role != null) {
+            ttt.getGameManager().onWin(role);
+        }
     }
 }

@@ -11,6 +11,7 @@ import de.deroq.ttt.timers.restart.RestartTimer;
 import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
+import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,7 +34,10 @@ public class GameManager {
     private boolean forceStarted;
     private boolean enteredTraitorTester;
     private boolean triggeredTraitorTrap;
-    private final int MIN_PLAYERS;
+
+    public final Location LOBBY_LOCATION;
+    public final int MIN_PLAYERS;
+    public final int MAX_PLAYERS;
 
     /**
      * Constructor of the class.
@@ -45,7 +49,10 @@ public class GameManager {
         this.forceStarted = false;
         this.enteredTraitorTester = false;
         this.triggeredTraitorTrap = false;
+
+        this.LOBBY_LOCATION = BukkitUtils.locationFromString(ttt.getFileManager().getSettingsConfig().getWaitingLobbyLocation());
         this.MIN_PLAYERS = ttt.getFileManager().getSettingsConfig().getMinPlayers();
+        this.MAX_PLAYERS = ttt.getFileManager().getSettingsConfig().getMaxPlayers();
 
         initLobbyIdleTimer();
     }
@@ -81,14 +88,28 @@ public class GameManager {
     }
 
     /**
+     * Starts the restart timer.
+     */
+    private void initRestartTimer() {
+        currentTimer.onStop();
+
+        RestartTimer restartTimer = new RestartTimer(ttt);
+        restartTimer.onStart();
+        this.currentTimer = restartTimer;
+    }
+
+    /**
      * Teleports a player to the lobby location.
      *
      * @param player The player to teleport.
      */
     public void teleportToLobby(Player player) {
-        String lobbyLocation = ttt.getFileManager().getSettingsConfig().getWaitingLobbyLocation();
-        if (lobbyLocation != null) {
-            player.teleport(BukkitUtils.locationFromString(lobbyLocation));
+        if (player.isDead()) {
+            player.spigot().respawn();
+        }
+
+        if (LOBBY_LOCATION != null) {
+            player.teleport(LOBBY_LOCATION);
         }
     }
 
@@ -108,35 +129,24 @@ public class GameManager {
     /**
      * Sets a player into the spectator mode.
      *
-     * @param player The player who is to spectate.
+     * @param gamePlayer The GamePlayer who is to spectate.
      */
-    public void setSpectator(Player player) {
-        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
-        if(!optionalGamePlayer.isPresent()) {
-            return;
-        }
+    public void setSpectator(GamePlayer gamePlayer, boolean spectator) {
+        gamePlayer.setSpectator(spectator, getAlive());
 
-        optionalGamePlayer.get().setSpectator(true, getAlive());
-        player.teleport(BukkitUtils.locationFromString(currentGameMap.getSpectatorLocation()));
+        if (spectator) {
+            gamePlayer.getPlayer().teleport(BukkitUtils.locationFromString(currentGameMap.getSpectatorLocation()));
+        }
     }
 
     /**
      * Loots a random item from the chest.
      *
-     * @param player The player who loots the item.
-     * @param block The clicked chest.
+     * @param gamePlayer The GamePlayer who loots the item.
+     * @param block      The clicked chest.
      */
-    public void lootRandomWeapon(Player player, Block block) {
-        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
-        if(!optionalGamePlayer.isPresent()) {
-            return;
-        }
-
-        GamePlayer gamePlayer = optionalGamePlayer.get();
-        if (gamePlayer.isSpectator()) {
-            return;
-        }
-
+    public void lootRandomWeapon(GamePlayer gamePlayer, Block block) {
+        Player player = gamePlayer.getPlayer();
         List<Material> items = Arrays.asList(
                 Material.STONE_SWORD,
                 Material.WOODEN_SWORD,
@@ -162,17 +172,11 @@ public class GameManager {
     /**
      * Loots an iron sword from the chest.
      *
-     * @param player The player who loots the sword.
-     * @param block The clicked chest.
+     * @param gamePlayer The GamePlayer who loots the sword.
+     * @param block      The clicked chest.
      */
-    public void lootIronSword(Player player, Block block) {
-        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
-        if(!optionalGamePlayer.isPresent()) {
-            return;
-        }
-
-        GamePlayer gamePlayer = optionalGamePlayer.get();
-
+    public void lootIronSword(GamePlayer gamePlayer, Block block) {
+        Player player = gamePlayer.getPlayer();
         if (gamePlayer.isSpectator()) {
             return;
         }
@@ -185,18 +189,10 @@ public class GameManager {
     /**
      * Enters into the traitor-tester.
      *
-     * @param player The player who enters.
+     * @param gamePlayer The GamePlayer who enters.
      */
-    public void enterTraitorTester(Player player) {
-        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
-        if(!optionalGamePlayer.isPresent()) {
-            return;
-        }
-
-        GamePlayer gamePlayer = optionalGamePlayer.get();
-        if (gamePlayer.isSpectator()) {
-            return;
-        }
+    public void enterTraitorTester(GamePlayer gamePlayer) {
+        Player player = gamePlayer.getPlayer();
 
         if (enteredTraitorTester) {
             player.sendMessage(Constants.PREFIX + "Es ist bereits jemand im Traitor-Tester");
@@ -211,9 +207,11 @@ public class GameManager {
 
         Location location = BukkitUtils.locationFromString(currentGameMap.getTesterLocation());
         player.teleport(location);
-        BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
         player.getNearbyEntities(2, 0, 2).forEach(entity -> entity.teleport(player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(-2))));
+
         BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat den Traitor-Tester betreten");
+        BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
+
         evaluateTraitorTesterResult(location, role);
         enteredTraitorTester = true;
     }
@@ -222,7 +220,7 @@ public class GameManager {
      * Evaluates the traitor-tester.
      *
      * @param location The location of the traitor-tester
-     * @param role The role of the player who entered the traitor-tester.
+     * @param role     The role of the player who entered the traitor-tester.
      */
     private void evaluateTraitorTesterResult(Location location, Role role) {
         Location rightLight = BukkitUtils.locationFromString(currentGameMap.getRightTesterLightLocation());
@@ -244,18 +242,10 @@ public class GameManager {
     /**
      * Triggers the traitor trap.
      *
-     * @param player The player who triggers the trap.
+     * @param gamePlayer The GamePlayer who triggers the trap.
      */
-    public void triggerTraitorTrap(Player player) {
-        Optional<GamePlayer> optionalGamePlayer = getGamePlayer(player.getUniqueId());
-        if(!optionalGamePlayer.isPresent()) {
-            return;
-        }
-
-        GamePlayer gamePlayer = optionalGamePlayer.get();
-        if (gamePlayer.isSpectator()) {
-            return;
-        }
+    public void triggerTraitorTrap(GamePlayer gamePlayer) {
+        Player player = gamePlayer.getPlayer();
 
         if (triggeredTraitorTrap) {
             player.sendMessage(Constants.PREFIX + "Die Traitor-Falle wurde bereits ausgelöst");
@@ -287,33 +277,42 @@ public class GameManager {
     }
 
     /**
-     * Checks for the win.
+     * Checks for a win.
+     *
+     * @return null if there is no winner yet.
      */
-    public void checkForWin() {
-        if (getTraitors().size() == getAlive().size() || getInnocents().size() + getDetectives().size() == getAlive().size()) {
-            this.gameState = GameState.RESTART;
-            Bukkit.getOnlinePlayers().forEach(this::teleportToLobby);
+    public Role checkForWin() {
+        if (getTraitors().size() == getAlive().size()) {
+            return Role.TRAITOR;
 
-            Role role = getWinningTeam();
-            BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " §7haben gewonnen");
-
-            RestartTimer restartTimer = new RestartTimer(ttt);
-            restartTimer.onStart();
-            this.currentTimer = restartTimer;
+        } else if (getInnocents().size() + getDetectives().size() == getAlive().size()) {
+            return Role.INNOCENT;
         }
+
+        return null;
     }
 
     /**
-     * Gets the team who won the game.
+     * Triggers on game win.
      *
-     * @return the role of the winning team.
+     * @param role The winning role.
      */
-    private Role getWinningTeam() {
-        if(getTraitors().size() == getAlive().size()) {
-            return Role.TRAITOR;
-        }
+    public void onWin(Role role) {
+        getGamePlayers().forEach(gamePlayer -> {
+            Player player = gamePlayer.getPlayer();
+            teleportToLobby(player);
+            setSpectator(gamePlayer, false);
+            PlayerUtils.loadPlayer(player);
+        });
 
-        return Role.INNOCENT;
+        BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " §7haben gewonnen");
+        BukkitUtils.spawnFirework(LOBBY_LOCATION);
+        this.gameState = GameState.RESTART;
+
+        RestartTimer restartTimer = new RestartTimer(ttt);
+        restartTimer.onStart();
+        this.currentTimer = restartTimer;
+
     }
 
     /**
