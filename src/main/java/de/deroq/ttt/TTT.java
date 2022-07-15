@@ -13,6 +13,7 @@ import de.deroq.ttt.game.map.GameMapManager;
 import de.deroq.ttt.listeners.*;
 import de.deroq.ttt.config.FileManager;
 import de.deroq.ttt.game.GameManager;
+import de.deroq.ttt.listeners.ttt.TTTDropOutListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
@@ -69,12 +70,18 @@ public class TTT extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDamageByEntityListener(this), this);
         pluginManager.registerEvents(new PlayerDeathListener(this), this);
+
+        /* TTT */
+        pluginManager.registerEvents(new TTTDropOutListener(this), this);
     }
 
     private void registerCommands() {
         SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
+        /* GAME */
         commandMap.register("start", new StartCommand("start", this));
         commandMap.register("forcemap", new ForceMapCommand("forcemap", this));
+
+       /* MAP */
         commandMap.register("setLobby", new SetLobbyCommand("setLobby", this));
         commandMap.register("createMap", new CreateMapCommand("createMap", this));
         commandMap.register("deleteMap", new DeleteMapCommand("deleteMap", this));
@@ -83,6 +90,8 @@ public class TTT extends JavaPlugin {
         commandMap.register("setTester", new SetTesterCommand("setTester", this));
         commandMap.register("addTesterLight", new AddTesterLightCommand("addTesterLight", this));
         commandMap.register("addBuilder", new AddBuilderCommand("addBuilder", this));
+
+        /* MISC */
         commandMap.register("setMaxPlayers", new SetMaxPlayersCommand("setMaxPlayers", this));
         commandMap.register("setMinPlayers", new SetMinPlayersCommand("setMinPlayers", this));
     }

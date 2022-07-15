@@ -5,8 +5,8 @@ import de.deroq.ttt.game.map.models.GameMap;
 import de.deroq.ttt.timers.ingame.ProtectionTimer;
 import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.BukkitUtils;
-import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
+import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -56,5 +56,7 @@ public class LobbyTimer extends TimerTask {
         ttt.getGameManager().setGameState(GameState.PROTECTION);
         ttt.getGameManager().teleportToSpawns();
         ttt.getGameManager().setCurrentTimer(protectionTimer);
+
+        Bukkit.getOnlinePlayers().forEach(PlayerUtils::loadPlayer);
     }
 }

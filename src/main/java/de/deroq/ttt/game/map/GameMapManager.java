@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters;
 import de.deroq.database.services.mongo.MongoDatabaseServiceMethods;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.map.models.GameMap;
+import de.deroq.ttt.utils.Constants;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +18,7 @@ public class GameMapManager {
 
     public GameMapManager(TTT ttt) {
         this.databaseServiceMethods = ttt.getDatabaseService().getDatabaseServiceMethods();
-        this.collection = ttt.getDatabaseService().getCollection("maps", GameMap.class);
+        this.collection = ttt.getDatabaseService().getCollection("tttMaps-" + Constants.SERVER_GROUP, GameMap.class);
         this.mapCache = new HashMap<>();
 
         cacheMaps().thenAcceptAsync(b -> ttt.getGameManager().setCurrentGameMap(pickRandomMap()));
@@ -33,7 +34,7 @@ public class GameMapManager {
         return databaseServiceMethods.onInsert(
                 collection,
                 Filters.eq("muid", muid),
-                new GameMap(muid));
+                GameMap.create(muid, Constants.SERVER_GROUP));
     }
 
     /**

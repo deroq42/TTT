@@ -1,9 +1,11 @@
 package de.deroq.ttt.listeners;
 
 import de.deroq.ttt.TTT;
+import de.deroq.ttt.events.TTTDropOutEvent;
 import de.deroq.ttt.game.models.GamePlayer;
 import de.deroq.ttt.models.Role;
 import de.deroq.ttt.utils.Constants;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +24,6 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player killed = event.getEntity();
-        Player killer = killed.getKiller();
         event.setDeathMessage(null);
         event.getDrops().clear();
 
@@ -33,6 +34,8 @@ public class PlayerDeathListener implements Listener {
 
         GamePlayer killedGamePlayer = optionalKilledGamePlayer.get();
         Role killedRole = killedGamePlayer.getRole();
+        Player killer = Bukkit.getPlayer(killedGamePlayer.getLastDamager());
+        GamePlayer killerGamePlayer;
 
         if(killer == null) {
             killed.sendMessage(Constants.PREFIX + "Du bist gestorben");
@@ -42,7 +45,7 @@ public class PlayerDeathListener implements Listener {
                 return;
             }
 
-            GamePlayer killerGamePlayer = optionalKillerGamePlayer.get();
+            killerGamePlayer = optionalKillerGamePlayer.get();
             Role killerRole = killerGamePlayer.getRole();
 
             killed.sendMessage(Constants.PREFIX + "Du wurdest von " + killerRole.getColorCode() + killer.getName() + " §7getötet");
@@ -50,11 +53,6 @@ public class PlayerDeathListener implements Listener {
             killer.sendMessage(Constants.PREFIX + "Du hast einen " + killedRole.getColorCode() + killedRole.getName() + " §7getötet");
         }
 
-        ttt.getGameManager().setSpectator(killedGamePlayer, true);
-
-        Role role = ttt.getGameManager().checkForWin();
-        if(role != null) {
-            ttt.getGameManager().onWin(role);
-        }
+        Bukkit.getPluginManager().callEvent(new TTTDropOutEvent(killedGamePlayer));
     }
 }

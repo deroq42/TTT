@@ -6,6 +6,7 @@ import java.util.List;
 public class GameMap {
 
     private String muid;
+    private String serverGroup;
     private List<String> builders;
     private List<String> spawnLocations;
     private String testerLocation;
@@ -13,9 +14,9 @@ public class GameMap {
     private String leftTesterLightLocation;
     private String spectatorLocation;
 
-    /* Public constructor due to pojo exceptions. */
-    public GameMap(String muid) {
+    private GameMap(String muid, String serverGroup) {
         this.muid = muid;
+        this.serverGroup = serverGroup;
         this.builders = new ArrayList<>();
         this.spawnLocations = new ArrayList<>();
     }
@@ -31,6 +32,14 @@ public class GameMap {
 
     public void setMuid(String muid) {
         this.muid = muid;
+    }
+
+    public String getServerGroup() {
+        return serverGroup;
+    }
+
+    public void setServerGroup(String serverGroup) {
+        this.serverGroup = serverGroup;
     }
 
     public List<String> getBuilders() {
@@ -79,5 +88,9 @@ public class GameMap {
 
     public void setSpectatorLocation(String spectatorLocation) {
         this.spectatorLocation = spectatorLocation;
+    }
+
+    public static GameMap create(String muid, String serverGroup) {
+        return new GameMap(muid, serverGroup);
     }
 }

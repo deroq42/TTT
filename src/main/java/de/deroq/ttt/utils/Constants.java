@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack;
 public class Constants {
     
     public static final String PREFIX = "§7[§3TTT§7] ";
+    /* IF CLOUD SYSTEM USAGE, IT HAD BEEN THE SERVER GROUP */
+    public static final String SERVER_GROUP = "12x1";
 
     public static final double DETECTIVE_ALLOCATE_RATE = 0.15;
     public static final double TRAITOR_ALLOCATE_RATE = 0.34;

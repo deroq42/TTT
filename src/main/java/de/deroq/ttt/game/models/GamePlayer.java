@@ -17,6 +17,7 @@ public class GamePlayer {
     private final UUID uuid;
     private boolean spectator;
     private Role role;
+    private UUID lastDamager;
 
     private GamePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -41,8 +42,6 @@ public class GamePlayer {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100000, 3), false);
             alive.forEach(gamePlayer -> gamePlayer.getPlayer().hidePlayer(player));
             PlayerUtils.loadInventory(player, GameState.INGAME);
-
-            this.role = null;
         } else {
             player.setGameMode(GameMode.SURVIVAL);
             player.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -64,6 +63,14 @@ public class GamePlayer {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public UUID getLastDamager() {
+        return lastDamager;
+    }
+
+    public void setLastDamager(UUID lastDamager) {
+        this.lastDamager = lastDamager;
     }
 
     public Player getPlayer() {

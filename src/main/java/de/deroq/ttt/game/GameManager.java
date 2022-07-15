@@ -305,7 +305,12 @@ public class GameManager {
             PlayerUtils.loadPlayer(player);
         });
 
-        BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " §7haben gewonnen");
+        StringBuilder traitorBuilder = new StringBuilder();
+        getTraitors().forEach(gamePlayer -> traitorBuilder.append(gamePlayer.getPlayer().getName()).append(" "));
+
+        BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " haben gewonnen");
+        BukkitUtils.sendBroadcastMessage("Die Traitor waren: §4" + traitorBuilder);
+
         BukkitUtils.spawnFirework(LOBBY_LOCATION);
         this.gameState = GameState.RESTART;
 
