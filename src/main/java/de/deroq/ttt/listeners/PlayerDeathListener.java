@@ -3,7 +3,7 @@ package de.deroq.ttt.listeners;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.events.TTTDropOutEvent;
 import de.deroq.ttt.game.models.GamePlayer;
-import de.deroq.ttt.models.Role;
+import de.deroq.ttt.game.models.Role;
 import de.deroq.ttt.utils.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

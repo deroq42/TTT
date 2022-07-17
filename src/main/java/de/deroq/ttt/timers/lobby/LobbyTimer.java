@@ -56,6 +56,7 @@ public class LobbyTimer extends TimerTask {
         ttt.getGameManager().setGameState(GameState.PROTECTION);
         ttt.getGameManager().teleportToSpawns();
         ttt.getGameManager().setCurrentTimer(protectionTimer);
+        ttt.getGameManager().getAlive().forEach(gamePlayer -> ttt.getGameManager().setProtectionScoreboard(gamePlayer));
 
         Bukkit.getOnlinePlayers().forEach(PlayerUtils::loadPlayer);
     }

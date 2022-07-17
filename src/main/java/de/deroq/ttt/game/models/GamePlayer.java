@@ -1,6 +1,6 @@
 package de.deroq.ttt.game.models;
 
-import de.deroq.ttt.models.Role;
+import de.deroq.ttt.game.scoreboard.GameScoreboard;
 import de.deroq.ttt.utils.GameState;
 import de.deroq.ttt.utils.PlayerUtils;
 import org.bukkit.Bukkit;
@@ -18,6 +18,7 @@ public class GamePlayer {
     private boolean spectator;
     private Role role;
     private UUID lastDamager;
+    private GameScoreboard gameScoreboard;
 
     private GamePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -75,6 +76,14 @@ public class GamePlayer {
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
+    }
+
+    public GameScoreboard getGameScoreboard() {
+        return gameScoreboard;
+    }
+
+    public void setGameScoreboard(GameScoreboard gameScoreboard) {
+        this.gameScoreboard = gameScoreboard;
     }
 
     public static GamePlayer create(UUID uuid) {

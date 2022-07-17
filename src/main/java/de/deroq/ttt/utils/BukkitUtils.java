@@ -6,6 +6,9 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class BukkitUtils {
 
     public static String getOnlinePlayers(int neededPlayers) {
@@ -60,5 +63,10 @@ public class BukkitUtils {
 
         firework.setFireworkMeta(fireworkMeta);
         firework.detonate();
+    }
+
+    public static String formatTime(long millis) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
+        return simpleDateFormat.format(new Date(millis));
     }
 }

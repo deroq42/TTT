@@ -43,6 +43,9 @@ public class ProtectionTimer extends TimerTask {
         ttt.getGameManager().allocateRoles();
 
         BukkitUtils.sendBroadcastMessage("Die Schutzzeit ist vorbei");
-        ttt.getGameManager().getAlive().forEach(gamePlayer -> gamePlayer.getPlayer().sendMessage(Constants.PREFIX + "Deine Rolle: " + gamePlayer.getRole().getColorCode() + gamePlayer.getRole().getName()));
+        ttt.getGameManager().getAlive().forEach(gamePlayer -> {
+            ttt.getGameManager().setIngameScoreboard(gamePlayer);
+            gamePlayer.getPlayer().sendMessage(Constants.PREFIX + "Deine Rolle: " + gamePlayer.getRole().getColorCode() + gamePlayer.getRole().getName());
+        });
     }
 }

@@ -2,7 +2,7 @@ package de.deroq.ttt.listeners;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.models.GamePlayer;
-import de.deroq.ttt.models.Role;
+import de.deroq.ttt.game.models.Role;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;

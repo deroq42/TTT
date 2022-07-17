@@ -2,7 +2,10 @@ package de.deroq.ttt.game;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.map.models.GameMap;
-import de.deroq.ttt.models.Role;
+import de.deroq.ttt.game.models.Role;
+import de.deroq.ttt.game.scoreboard.ingame.IngameScoreboard;
+import de.deroq.ttt.game.scoreboard.ingame.ProtectionScoreboard;
+import de.deroq.ttt.game.scoreboard.lobby.LobbyScoreboard;
 import de.deroq.ttt.timers.lobby.LobbyIdleTimer;
 import de.deroq.ttt.timers.lobby.LobbyTimer;
 import de.deroq.ttt.timers.TimerTask;
@@ -96,6 +99,32 @@ public class GameManager {
         RestartTimer restartTimer = new RestartTimer(ttt);
         restartTimer.onStart();
         this.currentTimer = restartTimer;
+    }
+
+    public void setLobbyScoreboard(GamePlayer gamePlayer) {
+        LobbyScoreboard lobbyScoreboard = new LobbyScoreboard(ttt, gamePlayer);
+        lobbyScoreboard.setScoreboard();
+        lobbyScoreboard.setTablist();
+    }
+
+    public void setProtectionScoreboard(GamePlayer gamePlayer) {
+        ProtectionScoreboard protectionScoreboard = new ProtectionScoreboard(ttt, gamePlayer);
+        protectionScoreboard.setScoreboard();
+        protectionScoreboard.setTablist();
+    }
+
+    public void setIngameScoreboard(GamePlayer gamePlayer) {
+        IngameScoreboard ingameScoreboard = new IngameScoreboard(ttt, gamePlayer);
+        ingameScoreboard.setScoreboard();
+        ingameScoreboard.setTablist();
+    }
+
+    public void updateScoreboard() {
+        getGamePlayers().forEach(gamePlayer -> gamePlayer.getGameScoreboard().updateScoreboard());
+    }
+
+    public void updateTablist() {
+        getGamePlayers().forEach(gamePlayer -> gamePlayer.getGameScoreboard().updateTablist());
     }
 
     /**
@@ -308,16 +337,11 @@ public class GameManager {
         StringBuilder traitorBuilder = new StringBuilder();
         getTraitors().forEach(gamePlayer -> traitorBuilder.append(gamePlayer.getPlayer().getName()).append(" "));
 
-        BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " haben gewonnen");
+        BukkitUtils.sendBroadcastMessage("Die " + role.getColorCode() + role.getName() + " §7haben gewonnen");
         BukkitUtils.sendBroadcastMessage("Die Traitor waren: §4" + traitorBuilder);
-
         BukkitUtils.spawnFirework(LOBBY_LOCATION);
         this.gameState = GameState.RESTART;
-
-        RestartTimer restartTimer = new RestartTimer(ttt);
-        restartTimer.onStart();
-        this.currentTimer = restartTimer;
-
+        initRestartTimer();
     }
 
     /**

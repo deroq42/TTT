@@ -1,4 +1,4 @@
-package de.deroq.ttt.models;
+package de.deroq.ttt.game.models;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;

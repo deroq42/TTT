@@ -1,6 +1,6 @@
 package de.deroq.ttt.utils;
 
-import de.deroq.ttt.models.ItemBuilder;
+import de.deroq.ttt.game.models.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

@@ -3,7 +3,7 @@ package de.deroq.ttt.listeners.ttt;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.events.TTTDropOutEvent;
 import de.deroq.ttt.game.models.GamePlayer;
-import de.deroq.ttt.models.Role;
+import de.deroq.ttt.game.models.Role;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -25,6 +25,7 @@ public class TTTDropOutListener implements Listener {
         GamePlayer gamePlayer = event.getGamePlayer();
 
         ttt.getGameManager().setSpectator(gamePlayer, true);
+        ttt.getGameManager().updateScoreboard();
 
         Role role = ttt.getGameManager().checkForWin();
         if(role != null) {

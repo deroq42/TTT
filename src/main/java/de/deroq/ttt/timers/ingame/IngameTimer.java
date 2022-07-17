@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class IngameTimer extends TimerTask {
 
     //WHERE THE TIMER STOPS TO COUNT UP
-    private final int TOTAL_SECONDS = 30*60;
+    private final int TOTAL_SECONDS = 15*60;
 
     public IngameTimer(TTT ttt) {
         super(ttt, false, 0, 20);
@@ -23,7 +23,7 @@ public class IngameTimer extends TimerTask {
 
     @Override
     public void onTick() {
-        if(Arrays.asList(20*60, 25*60, 29*60).contains(currentSeconds)) {
+        if(Arrays.asList(10*60, 14*60).contains(currentSeconds)) {
             final int REMAINING_TIME = (TOTAL_SECONDS - currentSeconds) / 60;
             BukkitUtils.sendBroadcastMessage("Die Runde endet in §3" + REMAINING_TIME + " Minuten");
         }
