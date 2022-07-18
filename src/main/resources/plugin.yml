@@ -3,3 +3,17 @@ version: 1.0
 author: deroq
 main: de.deroq.ttt.TTT
 api-version: 1.16
+commands:
+  start:
+  forcemap:
+  shop:
+  createMap:
+  deleteMap:
+  addSpawn:
+  setSpectator:
+  setTester:
+  setTesterLight:
+  addBuilder:
+  setLobby:
+  setMinPlayers:
+  setMaxPlayers:

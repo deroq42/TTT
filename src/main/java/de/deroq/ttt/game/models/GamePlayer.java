@@ -19,6 +19,7 @@ public class GamePlayer {
     private Role role;
     private UUID lastDamager;
     private GameScoreboard gameScoreboard;
+    private int shopPoints;
 
     private GamePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -84,6 +85,18 @@ public class GamePlayer {
 
     public void setGameScoreboard(GameScoreboard gameScoreboard) {
         this.gameScoreboard = gameScoreboard;
+    }
+
+    public int getShopPoints() {
+        return shopPoints;
+    }
+
+    public void setShopPoints(int shopPoints) {
+        this.shopPoints = shopPoints;
+    }
+
+    public void addShopPoints(int shopPoints) {
+        setShopPoints(getShopPoints() + shopPoints);
     }
 
     public static GamePlayer create(UUID uuid) {

@@ -51,6 +51,10 @@ public class PlayerDeathListener implements Listener {
             killed.sendMessage(Constants.PREFIX + "Du wurdest von " + killerRole.getColorCode() + killer.getName() + " §7getötet");
             killer.sendMessage(Constants.PREFIX + "Du hast §3" + killed.getName() + " §7getötet");
             killer.sendMessage(Constants.PREFIX + "Du hast einen " + killedRole.getColorCode() + killedRole.getName() + " §7getötet");
+
+            if(killerRole != killedRole && killerRole != Role.INNOCENT) {
+                killerGamePlayer.addShopPoints(killedRole.getShopPoints());
+            }
         }
 
         Bukkit.getPluginManager().callEvent(new TTTDropOutEvent(killedGamePlayer));

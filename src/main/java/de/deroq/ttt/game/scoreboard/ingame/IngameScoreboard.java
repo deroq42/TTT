@@ -29,7 +29,7 @@ public class IngameScoreboard extends GameScoreboard {
         Team pointsTeam = scoreboard.registerNewTeam("points");
         pointsTeam.setPrefix("§fPunkte: ");
         pointsTeam.addEntry("§d");
-        pointsTeam.setSuffix("§d0"); //Add points soon
+        pointsTeam.setSuffix("§d" + gamePlayer.getShopPoints());
 
         Team playersTeam = scoreboard.registerNewTeam("players");
         playersTeam.setPrefix("§fSpieler: ");
@@ -101,7 +101,7 @@ public class IngameScoreboard extends GameScoreboard {
         }
 
         pointsTeam.setPrefix("§fPunkte: ");
-        pointsTeam.setSuffix("§d0"); //Add points soon
+        pointsTeam.setSuffix("§d" + gamePlayer.getShopPoints());
 
         playersTeam.setPrefix("§fSpieler: ");
         playersTeam.setSuffix("§3" + ttt.getGameManager().getAlive().size());

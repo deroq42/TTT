@@ -6,20 +6,20 @@ import de.deroq.ttt.timers.TimerTask;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class StartCommand extends Command {
+public class StartCommand implements CommandExecutor {
 
     private final TTT ttt;
 
-    public StartCommand(String name, TTT ttt) {
-        super(name);
+    public StartCommand(TTT ttt) {
         this.ttt = ttt;
     }
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(!(commandSender instanceof Player)) {
             return true;
         }

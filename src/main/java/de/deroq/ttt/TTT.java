@@ -4,6 +4,7 @@ import de.deroq.database.models.DatabaseService;
 import de.deroq.database.models.DatabaseServiceType;
 import de.deroq.database.services.mongo.MongoDatabaseService;
 import de.deroq.ttt.commands.game.ForceMapCommand;
+import de.deroq.ttt.commands.game.ShopCommand;
 import de.deroq.ttt.commands.game.StartCommand;
 import de.deroq.ttt.commands.map.*;
 import de.deroq.ttt.commands.misc.SetLobbyCommand;
@@ -15,8 +16,6 @@ import de.deroq.ttt.config.FileManager;
 import de.deroq.ttt.game.GameManager;
 import de.deroq.ttt.listeners.ttt.TTTDropOutListener;
 import org.bukkit.Bukkit;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -70,30 +69,31 @@ public class TTT extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamageListener(this), this);
         pluginManager.registerEvents(new EntityDamageByEntityListener(this), this);
         pluginManager.registerEvents(new PlayerDeathListener(this), this);
+        pluginManager.registerEvents(new InventoryClickListener(this), this);
 
         /* TTT */
         pluginManager.registerEvents(new TTTDropOutListener(this), this);
     }
 
     private void registerCommands() {
-        SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
         /* GAME */
-        commandMap.register("start", new StartCommand("start", this));
-        commandMap.register("forcemap", new ForceMapCommand("forcemap", this));
+        getCommand("start").setExecutor(new StartCommand(this));
+        getCommand("forcemap").setExecutor(new ForceMapCommand(this));
+        getCommand("shop").setExecutor(new ShopCommand(this));
 
        /* MAP */
-        commandMap.register("setLobby", new SetLobbyCommand("setLobby", this));
-        commandMap.register("createMap", new CreateMapCommand("createMap", this));
-        commandMap.register("deleteMap", new DeleteMapCommand("deleteMap", this));
-        commandMap.register("addSpawn", new AddSpawnCommand("addSpawn", this));
-        commandMap.register("setSpectator", new SetSpectatorCommand("setSpectator", this));
-        commandMap.register("setTester", new SetTesterCommand("setTester", this));
-        commandMap.register("addTesterLight", new AddTesterLightCommand("addTesterLight", this));
-        commandMap.register("addBuilder", new AddBuilderCommand("addBuilder", this));
+        getCommand("createMap").setExecutor(new CreateMapCommand(this));
+        getCommand("deleteMap").setExecutor(new DeleteMapCommand(this));
+        getCommand("addSpawn").setExecutor(new AddSpawnCommand(this));
+        getCommand("setSpectator").setExecutor(new SetSpectatorCommand(this));
+        getCommand("setTester").setExecutor(new SetTesterCommand(this));
+        getCommand("setTesterLight").setExecutor(new SetTesterLightCommand(this));
+        getCommand("addBuilder").setExecutor(new AddBuilderCommand(this));
 
         /* MISC */
-        commandMap.register("setMaxPlayers", new SetMaxPlayersCommand("setMaxPlayers", this));
-        commandMap.register("setMinPlayers", new SetMinPlayersCommand("setMinPlayers", this));
+        getCommand("setMaxPlayers").setExecutor(new SetMaxPlayersCommand(this));
+        getCommand("setMinPlayers").setExecutor(new SetMinPlayersCommand(this));
+        getCommand("setLobby").setExecutor(new SetLobbyCommand(this));
     }
 
     public MongoDatabaseService getDatabaseService() {

@@ -3,20 +3,20 @@ package de.deroq.ttt.commands.map;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.Constants;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class DeleteMapCommand extends Command {
+public class DeleteMapCommand implements CommandExecutor {
 
     private final TTT ttt;
 
-    public DeleteMapCommand(String name, TTT ttt) {
-        super(name);
+    public DeleteMapCommand(TTT ttt) {
         this.ttt = ttt;
     }
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (!(commandSender instanceof Player)) {
             return true;
         }

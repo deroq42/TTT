@@ -4,22 +4,22 @@ import de.deroq.ttt.TTT;
 import de.deroq.ttt.utils.BukkitUtils;
 import de.deroq.ttt.utils.Constants;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 
-public class SetLobbyCommand extends Command {
+public class SetLobbyCommand implements CommandExecutor {
 
     private final TTT ttt;
 
-    public SetLobbyCommand(String name, TTT ttt) {
-        super(name);
+    public SetLobbyCommand(TTT ttt) {
         this.ttt = ttt;
     }
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(!(commandSender instanceof Player)) {
             return true;
         }
