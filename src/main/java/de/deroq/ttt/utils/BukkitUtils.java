@@ -44,11 +44,17 @@ public class BukkitUtils {
     }
 
     public static void sendBroadcastSoundInRadius(Location location, int x, int y, int z, Sound sound) {
-        location.getWorld().getNearbyEntities(location, x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
+        location.getWorld().getNearbyEntities(location, x, y, z)
+                .stream()
+                .filter(entity -> entity instanceof Player)
+                .forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
     }
 
     public static void sendBroadcastSoundInRadius(Player player, int x, int y, int z, Sound sound) {
-        player.getNearbyEntities(x, y, z).forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
+        player.getNearbyEntities(x, y, z)
+                .stream()
+                .filter(entity -> entity instanceof Player)
+                .forEach(entity -> ((Player) entity).playSound(entity.getLocation(), sound, 3f, 3f));
     }
 
     public static void spawnFirework(Location location) {

@@ -73,7 +73,7 @@ public class IngameScoreboard extends GameScoreboard {
             Player player = gamePlayers.getPlayer();
             Role role = gamePlayers.getRole();
 
-            if (role == null) {
+            if (role == null || gamePlayers.isSpectator()) {
                 spectatorTeam.addEntry(player.getName());
                 player.setDisplayName(spectatorTeam.getPrefix() + player.getName());
             } else {
@@ -118,11 +118,11 @@ public class IngameScoreboard extends GameScoreboard {
             return;
         }
 
-        ttt.getGameManager().getGamePlayers().forEach(gamePlayer -> {
-            Player player = gamePlayer.getPlayer();
-            Role role = gamePlayer.getRole();
+        ttt.getGameManager().getGamePlayers().forEach(gamePlayers -> {
+            Player player = gamePlayers.getPlayer();
+            Role role = gamePlayers.getRole();
 
-            if (role == null) {
+            if (role == null || gamePlayers.isSpectator()) {
                 spectatorTeam.addEntry(player.getName());
                 player.setDisplayName(spectatorTeam.getPrefix() + player.getName());
             } else {

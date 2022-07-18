@@ -41,6 +41,7 @@ public class GameManager {
     public final Location LOBBY_LOCATION;
     public final int MIN_PLAYERS;
     public final int MAX_PLAYERS;
+    public final List<Material> LOOTABLE_ITEMS;
 
     /**
      * Constructor of the class.
@@ -56,6 +57,10 @@ public class GameManager {
         this.LOBBY_LOCATION = BukkitUtils.locationFromString(ttt.getFileManager().getSettingsConfig().getWaitingLobbyLocation());
         this.MIN_PLAYERS = ttt.getFileManager().getSettingsConfig().getMinPlayers();
         this.MAX_PLAYERS = ttt.getFileManager().getSettingsConfig().getMaxPlayers();
+        this.LOOTABLE_ITEMS = Arrays.asList(
+                Material.STONE_SWORD,
+                Material.WOODEN_SWORD,
+                Material.BOW);
 
         initLobbyIdleTimer();
     }
@@ -161,9 +166,14 @@ public class GameManager {
      * @param gamePlayer The GamePlayer who is to spectate.
      */
     public void setSpectator(GamePlayer gamePlayer, boolean spectator) {
+        Player player = gamePlayer.getPlayer();
         gamePlayer.setSpectator(spectator, getAlive());
 
         if (spectator) {
+            if(player.isDead()) {
+                player.spigot().respawn();
+            }
+
             gamePlayer.getPlayer().teleport(BukkitUtils.locationFromString(currentGameMap.getSpectatorLocation()));
         }
     }
@@ -176,10 +186,7 @@ public class GameManager {
      */
     public void lootRandomWeapon(GamePlayer gamePlayer, Block block) {
         Player player = gamePlayer.getPlayer();
-        List<Material> items = Arrays.asList(
-                Material.STONE_SWORD,
-                Material.WOODEN_SWORD,
-                Material.BOW);
+        List<Material> items = new ArrayList<>(LOOTABLE_ITEMS);
 
         Collections.shuffle(items);
         for (Material material : items) {
@@ -240,9 +247,9 @@ public class GameManager {
 
         BukkitUtils.sendBroadcastMessage("§3" + player.getName() + " §7hat den Traitor-Tester betreten");
         BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, Sound.BLOCK_PISTON_EXTEND);
-
-        evaluateTraitorTesterResult(location, role);
         enteredTraitorTester = true;
+
+        evaluateTraitorTesterResult(gamePlayer, location, role);
     }
 
     /**
@@ -251,19 +258,25 @@ public class GameManager {
      * @param location The location of the traitor-tester
      * @param role     The role of the player who entered the traitor-tester.
      */
-    private void evaluateTraitorTesterResult(Location location, Role role) {
+    private void evaluateTraitorTesterResult(GamePlayer gamePlayer, Location location, Role role) {
+        if(role == Role.TRAITOR && gamePlayer.isInnocentTicket()) {
+            role = Role.INNOCENT;
+        }
+
+        final Role evaluatedRole = role;
         Location rightLight = BukkitUtils.locationFromString(currentGameMap.getRightTesterLightLocation());
         Location leftLight = BukkitUtils.locationFromString(currentGameMap.getLeftTesterLightLocation());
 
         Bukkit.getScheduler().runTaskLater(ttt, () -> {
-            rightLight.getBlock().setType(role.getTesterLight());
-            leftLight.getBlock().setType(role.getTesterLight());
-            BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, role.getTesterSound());
+            rightLight.getBlock().setType(evaluatedRole.getTesterLight());
+            leftLight.getBlock().setType(evaluatedRole.getTesterLight());
+            BukkitUtils.sendBroadcastSoundInRadius(location, 7, 5, 7, evaluatedRole.getTesterSound());
             enteredTraitorTester = false;
 
             Bukkit.getScheduler().runTaskLater(ttt, () -> {
                 rightLight.getBlock().setType(Material.WHITE_STAINED_GLASS);
                 leftLight.getBlock().setType(Material.WHITE_STAINED_GLASS);
+                gamePlayer.setInnocentTicket(false);
             }, 3 * 20);
         }, 5 * 20);
     }
@@ -374,7 +387,8 @@ public class GameManager {
      * Allocates random players to the detective role by the guide value 0.15.
      */
     private void allocateDetectives() {
-        double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
+        //double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
+        double detectivesValue = Bukkit.getOnlinePlayers().size() * 0.34;
         int detectives = (int) Math.round(detectivesValue);
 
         Random random = new Random();
@@ -531,6 +545,13 @@ public class GameManager {
      */
     public Collection<GamePlayer> getGamePlayers() {
         return gamePlayers;
+    }
+
+    public List<GamePlayer> getSpectators() {
+        return gamePlayers
+                .stream()
+                .filter(GamePlayer::isSpectator)
+                .collect(Collectors.toList());
     }
 
     public void setGamePlayers(Collection<GamePlayer> gamePlayers) {

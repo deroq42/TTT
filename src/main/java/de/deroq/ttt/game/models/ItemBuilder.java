@@ -6,14 +6,12 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class ItemBuilder {
 
@@ -48,6 +46,15 @@ public class ItemBuilder {
 
     public ItemBuilder setAmount(int value) {
         item.setAmount(value);
+        return this;
+    }
+
+    public ItemBuilder setDurability(int durability) {
+        if(!(meta instanceof Damageable)) {
+            return this;
+        }
+
+        ((Damageable) meta).setDamage(durability);
         return this;
     }
 
@@ -91,6 +98,10 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addLoreAll(List<String> lines) {
+        if(lines == null) {
+            return this;
+        }
+
         lore.addAll(lines);
         return this;
     }
@@ -126,6 +137,15 @@ public class ItemBuilder {
 
     public ItemBuilder addEnchantment(Enchantment ench, int lvl) {
         meta.addEnchant(ench, lvl, true);
+        return this;
+    }
+
+    public ItemBuilder addEnchantmentAll(Map<Enchantment, Integer> enchantments) {
+        if(enchantments == null) {
+            return this;
+        }
+
+        enchantments.forEach((enchantment, level) -> meta.addEnchant(enchantment, level, true));
         return this;
     }
 

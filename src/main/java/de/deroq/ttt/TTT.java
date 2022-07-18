@@ -11,6 +11,7 @@ import de.deroq.ttt.commands.misc.SetLobbyCommand;
 import de.deroq.ttt.commands.misc.SetMaxPlayersCommand;
 import de.deroq.ttt.commands.misc.SetMinPlayersCommand;
 import de.deroq.ttt.game.map.GameMapManager;
+import de.deroq.ttt.game.shop.GameShopManager;
 import de.deroq.ttt.listeners.*;
 import de.deroq.ttt.config.FileManager;
 import de.deroq.ttt.game.GameManager;
@@ -25,6 +26,7 @@ public class TTT extends JavaPlugin {
     private FileManager fileManager;
     private GameManager gameManager;
     private GameMapManager gameMapManager;
+    private GameShopManager gameShopManager;
 
     @Override
     public void onEnable() {
@@ -59,6 +61,7 @@ public class TTT extends JavaPlugin {
 
         this.gameManager = new GameManager(this);
         this.gameMapManager = new GameMapManager(this);
+        this.gameShopManager = new GameShopManager(this);
     }
 
     private void registerListeners() {
@@ -110,5 +113,9 @@ public class TTT extends JavaPlugin {
 
     public GameMapManager getGameMapManager() {
         return gameMapManager;
+    }
+
+    public GameShopManager getGameShopManager() {
+        return gameShopManager;
     }
 }

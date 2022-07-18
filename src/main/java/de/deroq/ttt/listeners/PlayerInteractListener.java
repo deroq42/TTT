@@ -101,7 +101,10 @@ public class PlayerInteractListener implements Listener {
 
             if (itemStack.isSimilar(Constants.LOBBY_ITEM)) {
                 player.kickPlayer("");
+                return;
             }
+
+            ttt.getGameShopManager().handleInteract(gamePlayer, itemStack);
         }
     }
 }

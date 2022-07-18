@@ -2,7 +2,8 @@ package de.deroq.ttt.listeners;
 
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.models.GamePlayer;
-import de.deroq.ttt.game.shop.TraitorShop;
+import de.deroq.ttt.game.shop.detective.DetectiveShop;
+import de.deroq.ttt.game.shop.traitor.TraitorShop;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
-        if(ttt.getGameManager().getGameState() != GameState.INGAME) {
+        if(ttt.getGameManager().getGameState() == GameState.LOBBY) {
             if (player.getGameMode() != GameMode.CREATIVE) {
                 event.setCancelled(true);
             }
@@ -53,9 +54,9 @@ public class InventoryClickListener implements Listener {
             return;
         }
 
-        if(event.getClickedInventory().getHolder() instanceof TraitorShop) {
+        if(event.getInventory().getHolder() instanceof TraitorShop ||event.getInventory().getHolder() instanceof DetectiveShop) {
             event.setCancelled(true);
-            System.out.println("Jo");
+            ttt.getGameShopManager().handleInventoryClick(gamePlayer, itemStack);
         }
     }
 }

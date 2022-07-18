@@ -3,7 +3,7 @@ package de.deroq.ttt.commands.game;
 import de.deroq.ttt.TTT;
 import de.deroq.ttt.game.models.GamePlayer;
 import de.deroq.ttt.game.models.Role;
-import de.deroq.ttt.game.shop.TraitorShop;
+import de.deroq.ttt.game.shop.traitor.TraitorShop;
 import de.deroq.ttt.utils.Constants;
 import de.deroq.ttt.utils.GameState;
 import org.bukkit.command.Command;
@@ -57,8 +57,9 @@ public class ShopCommand implements CommandExecutor  {
         }
 
         if(role == Role.TRAITOR) {
-            TraitorShop traitorShop = new TraitorShop();
-            player.openInventory(traitorShop.getInventory());
+            player.openInventory(ttt.getGameShopManager().getTraitorShop().getInventory());
+        } else {
+            player.openInventory(ttt.getGameShopManager().getDetectiveShop().getInventory());
         }
 
        return false;

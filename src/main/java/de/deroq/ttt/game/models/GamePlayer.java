@@ -19,7 +19,10 @@ public class GamePlayer {
     private Role role;
     private UUID lastDamager;
     private GameScoreboard gameScoreboard;
-    private int shopPoints;
+    private int shopPoints = 4;
+
+    /* SHOP ITEMS */
+    private boolean innocentTicket;
 
     private GamePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -97,6 +100,18 @@ public class GamePlayer {
 
     public void addShopPoints(int shopPoints) {
         setShopPoints(getShopPoints() + shopPoints);
+    }
+
+    public void removeShopPoints(int shopPoints) {
+        setShopPoints(getShopPoints() - shopPoints);
+    }
+
+    public boolean isInnocentTicket() {
+        return innocentTicket;
+    }
+
+    public void setInnocentTicket(boolean innocentTicket) {
+        this.innocentTicket = innocentTicket;
     }
 
     public static GamePlayer create(UUID uuid) {

@@ -79,6 +79,9 @@ public class EntityDamageByEntityListener implements Listener {
 
         if (damagedGamePlayer.getRole() == damagerGamePlayer.getRole() && damagedGamePlayer.getRole() != Role.INNOCENT) {
             event.setDamage(0);
+            return;
         }
+
+        damagedGamePlayer.setLastDamager(damager.getUniqueId());
     }
 }

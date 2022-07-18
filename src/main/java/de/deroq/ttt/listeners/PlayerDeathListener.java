@@ -28,7 +28,7 @@ public class PlayerDeathListener implements Listener {
         event.getDrops().clear();
 
         Optional<GamePlayer> optionalKilledGamePlayer = ttt.getGameManager().getGamePlayer(killed.getUniqueId());
-        if(!optionalKilledGamePlayer.isPresent()) {
+        if (!optionalKilledGamePlayer.isPresent()) {
             return;
         }
 
@@ -37,11 +37,11 @@ public class PlayerDeathListener implements Listener {
         Player killer = Bukkit.getPlayer(killedGamePlayer.getLastDamager());
         GamePlayer killerGamePlayer;
 
-        if(killer == null) {
+        if (killer == null) {
             killed.sendMessage(Constants.PREFIX + "Du bist gestorben");
         } else {
             Optional<GamePlayer> optionalKillerGamePlayer = ttt.getGameManager().getGamePlayer(killer.getUniqueId());
-            if(!optionalKillerGamePlayer.isPresent()) {
+            if (!optionalKillerGamePlayer.isPresent()) {
                 return;
             }
 
@@ -52,7 +52,9 @@ public class PlayerDeathListener implements Listener {
             killer.sendMessage(Constants.PREFIX + "Du hast §3" + killed.getName() + " §7getötet");
             killer.sendMessage(Constants.PREFIX + "Du hast einen " + killedRole.getColorCode() + killedRole.getName() + " §7getötet");
 
-            if(killerRole != killedRole && killerRole != Role.INNOCENT) {
+            if ((killerRole != Role.DETECTIVE && killedRole != Role.INNOCENT)
+                    && killerRole != Role.INNOCENT
+                    && killerRole != killedRole) {
                 killerGamePlayer.addShopPoints(killedRole.getShopPoints());
             }
         }
