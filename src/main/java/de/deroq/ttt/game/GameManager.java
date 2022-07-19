@@ -387,8 +387,7 @@ public class GameManager {
      * Allocates random players to the detective role by the guide value 0.15.
      */
     private void allocateDetectives() {
-        //double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
-        double detectivesValue = Bukkit.getOnlinePlayers().size() * 0.34;
+        double detectivesValue = Bukkit.getOnlinePlayers().size() * Constants.DETECTIVE_ALLOCATE_RATE;
         int detectives = (int) Math.round(detectivesValue);
 
         Random random = new Random();

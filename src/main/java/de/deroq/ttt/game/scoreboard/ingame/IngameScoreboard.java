@@ -77,13 +77,16 @@ public class IngameScoreboard extends GameScoreboard {
                 spectatorTeam.addEntry(player.getName());
                 player.setDisplayName(spectatorTeam.getPrefix() + player.getName());
             } else {
-                if(role == Role.TRAITOR && gamePlayer.getRole() != Role.TRAITOR) {
+                String colorCode;
+
+                if (role == Role.TRAITOR && gamePlayer.getRole() != Role.TRAITOR) {
                     role = Role.INNOCENT;
+                    colorCode = Role.INNOCENT.getColorCode();
+                } else {
+                    colorCode = role.getColorCode();
                 }
 
                 String name = role.getName();
-                String colorCode = role.getColorCode();
-
                 scoreboard.getTeam("tab-" + name).addEntry(player.getName());
                 player.setDisplayName(colorCode + player.getName());
             }
@@ -96,7 +99,7 @@ public class IngameScoreboard extends GameScoreboard {
         Team playersTeam = scoreboard.getTeam("players");
         Team endTeam = scoreboard.getTeam("end");
 
-        if(pointsTeam == null || playersTeam == null || endTeam == null) {
+        if (pointsTeam == null || playersTeam == null || endTeam == null) {
             return;
         }
 
@@ -126,13 +129,16 @@ public class IngameScoreboard extends GameScoreboard {
                 spectatorTeam.addEntry(player.getName());
                 player.setDisplayName(spectatorTeam.getPrefix() + player.getName());
             } else {
-                if(role == Role.TRAITOR && gamePlayer.getRole() != Role.TRAITOR) {
+                String colorCode;
+
+                if (role == Role.TRAITOR && gamePlayer.getRole() != Role.TRAITOR) {
                     role = Role.INNOCENT;
+                    colorCode = Role.INNOCENT.getColorCode();
+                } else {
+                    colorCode = role.getColorCode();
                 }
 
                 String name = role.getName();
-                String colorCode = role.getColorCode();
-
                 scoreboard.getTeam("tab-" + name).addEntry(player.getName());
                 player.setDisplayName(colorCode + player.getName());
             }

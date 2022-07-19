@@ -73,6 +73,7 @@ public class TTT extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamageByEntityListener(this), this);
         pluginManager.registerEvents(new PlayerDeathListener(this), this);
         pluginManager.registerEvents(new InventoryClickListener(this), this);
+        pluginManager.registerEvents(new AsyncPlayerChatListener(this), this);
 
         /* TTT */
         pluginManager.registerEvents(new TTTDropOutListener(this), this);
